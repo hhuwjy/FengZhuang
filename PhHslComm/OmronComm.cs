@@ -34,43 +34,46 @@ namespace PhHslComm
     class OmronComm
     {
 
-        #region Function 读取六个工位的数据
-        public void ReadandSendStation(StationInfoStruct_CIP[] input, OmronConnectedCipNet cip , GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary)
-        {
-            //var tempstring = "";  //暂存取到的string数据
-            //int count = 0; //计数器
-            ushort length = (ushort)input.Length;
-            string StationName_Now = CN2EN(input[0].stationName); //将当前结构体数组的工位名读取出来，后续在xml文件中对应,中文转拼音（英文）
-            var listWriteItem = new List<WriteItem>();
-            //WriteItem[] writeItems = new WriteItem[] { };
+        //#region Function 读取六个工位的数据
+        //public void ReadandSendStation(StationInfoStruct_CIP[] input, OmronConnectedCipNet cip , GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        //{
+        //    //var tempstring = "";  //暂存取到的string数据
+        //    //int count = 0; //计数器
+        //    ushort length = (ushort)input.Length;
+        //    string StationName_Now = CN2EN(input[0].stationName); //将当前结构体数组的工位名读取出来，后续在xml文件中对应,中文转拼音（英文）
+        //    var listWriteItem = new List<WriteItem>();
+        //    //WriteItem[] writeItems = new WriteItem[] { };
 
-            listWriteItem.Clear();  //每次发送工位数据前都清空list
+        //    listWriteItem.Clear();  //每次发送工位数据前都清空list
 
-            OperateResult<float[]> ret = cip.ReadFloat(input[0].varName, length);
-            if (ret.IsSuccess)
-            {
-                //writeItems = null;
-                try
-                {
-                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(StationName_Now), Arp.Type.Grpc.CoreType.CtArray, ret.Content)); //todo:待优化floatArr改为Content
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("ERRO: {0}", e);
-                }
+        //    OperateResult<float[]> ret = cip.ReadFloat(input[0].varName, length);
+        //    if (ret.IsSuccess)
+        //    {
+        //        //writeItems = null;
+        //        try
+        //        {
+        //            listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(StationName_Now), Arp.Type.Grpc.CoreType.CtArray, ret.Content)); //todo:待优化floatArr改为Content
+        //            var writeItemsArray = listWriteItem.ToArray();
+        //            var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+        //            bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            Console.WriteLine("ERRO: {0}", e);
+        //        }
 
-                SendDataToIEC(listWriteItem);
+        //        //SendDataToIEC(listWriteItem);
                 
-            }
-            else
-            {
-                //logNet.WriteInfo(input[0].varName + "read failed");
-                Console.WriteLine(input[0].varName + "read array failed");
+        //    }
+        //    else
+        //    {
+        //        //logNet.WriteInfo(input[0].varName + "read failed");
+        //        Console.WriteLine(input[0].varName + "read array failed");
 
-            }
+        //    }
 
-        }
-        #endregion  Function 读取六个工位的数据
+        //}
+        //#endregion  Function 读取六个工位的数据
 
 
         #region Function 读取设备信息（以数组形式一起读上来，再按照序号写入对应的工位里）
@@ -94,8 +97,8 @@ namespace PhHslComm
                 }
                 else
                 {
-                    logNet.WriteInfo(ReadObject + "read failed");
-                    //Console.WriteLine(ReadObject + "read failed");
+                    //logNet.WriteInfo(ReadObject + "read failed");
+                    Console.WriteLine(ReadObject + "read failed");
 
                 }
             }
@@ -128,8 +131,7 @@ namespace PhHslComm
                     {
                         var tempstring = string.Join("", Output, 0 + 50 * i, 49 + 50 * i);
                         float[] output_temp = new float[50];
-                        Output[input[i].stationNumber] = tool.ConvertFloatArrayToAscii(ret.Content, 0 + 50 * i, 49 + 50 * i);
-                        //Output[input[i].stationNumber].Append(tempstring);
+                        Output[input[i].stationNumber] = tool.ConvertFloatArrayToAscii(ret.Content, 0 + 50 * i, 49 + 50 * i);                        
                     }
                 }
                 else
@@ -142,16 +144,14 @@ namespace PhHslComm
         }
         #endregion 
  
-
-        #region Function 读取1000ms的数据 （功能开关，生产统计，报警信号，寿命管理)
+        #region Function 读取1000ms的数据 （功能开关，生产统计，报警信号，寿命管理, OEE)
 
         public bool[] ReadOneSecData(OneSecInfoStruct_CIP[] input, OmronConnectedCipNet cip, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary)
         {           
             ushort length = (ushort)input.Length;
             var AlarmValue = new bool[length];
             if (input[0].varType == "BOOL" && input[0].varName != "Manual_Andon[10]")   //区分Manual_Andon 不连续数组
-            {
-                
+            {               
                 OperateResult<bool[]> ret = cip.ReadBool(input[0].varName, length);
 
                 if (ret.IsSuccess)
@@ -161,8 +161,8 @@ namespace PhHslComm
                 }
                 else
                 {
-                    //logNet.WriteInfo(input[0].varName + "read failed");
-                    Console.WriteLine(input[0].varName + "read failed");
+                    logNet.WriteInfo(input[0].varName + "read failed");
+                   // Console.WriteLine(input[0].varName + "read failed");
                 }
             }
             else if (input[0].varName == "Manual_Andon[10]")
@@ -176,8 +176,8 @@ namespace PhHslComm
                     }
                     else
                     {
-                        //logNet.WriteInfo(input[0].varName + "read failed");
-                        Console.WriteLine(input[i].varName + "read failed");
+                        logNet.WriteInfo(input[0].varName + "read failed");
+                        //Console.WriteLine(input[i].varName + "read failed");
                     }
                     
                 }
@@ -186,10 +186,10 @@ namespace PhHslComm
             return AlarmValue;
 
         }
-        public void ReadandSendOneSecData(OneSecInfoStruct_CIP[] input, OmronConnectedCipNet cip, int IECNumber,GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary)
+        public void ReadandSendOneSecData(OneSecInfoStruct_CIP[] input, OmronConnectedCipNet cip, int IECNumber,GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
         {
             var listWriteItem = new List<WriteItem>();
-            WriteItem[] writeItems = new WriteItem[] { };
+            //WriteItem[] writeItems = new WriteItem[] { };
 
             if (input[0].varType == "BOOL" )   //区分Manual_Andon 不连续数组
             {
@@ -197,41 +197,36 @@ namespace PhHslComm
                 OperateResult<bool[]> ret = cip.ReadBool(input[0].varName, length);
                 var senddata =new bool[IECNumber];
                 if (ret.IsSuccess)
-                {
-                    #region Grpc发送给IEC
-
-                    //writeItems = null;  //先清空
+                {                  
                     if (input.Length< IECNumber)
                     {
                         Array.Copy(ret.Content, 0, senddata, 0, input.Length);
                         try
                         {
                            listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(input[0].varName), Arp.Type.Grpc.CoreType.CtArray, senddata));
+                            var writeItemsArray = listWriteItem.ToArray();
+                            var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                            bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
                         }
                         catch (Exception e)
                         {
                             Console.WriteLine("ERRO: {0}", e);
                         }
-
-                        SendDataToIEC(listWriteItem);
                     }
                     else
                     {
                         try
                         {
                             listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(input[0].varName), Arp.Type.Grpc.CoreType.CtArray, ret.Content));
+                            var writeItemsArray = listWriteItem.ToArray();
+                            var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                            bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
                         }
                         catch (Exception e)
                         {
                             Console.WriteLine("ERRO: {0}", e);
                         }
-
-                        SendDataToIEC(listWriteItem);
                     }
-
-                  
-                                
-                    #endregion 
 
                 }
                 else
@@ -254,32 +249,36 @@ namespace PhHslComm
                         try
                         {
                             listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(input[0].varName), Arp.Type.Grpc.CoreType.CtArray, senddata));
+                            var writeItemsArray = listWriteItem.ToArray();
+                            var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                            bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
                         }
                         catch (Exception e)
                         {
                             Console.WriteLine("ERRO: {0}", e);
                         }
 
-                       SendDataToIEC(listWriteItem);
                     }
                     else
                     {
                         try
                         {
                             listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(input[0].varName), Arp.Type.Grpc.CoreType.CtArray, ret.Content));
+                            var writeItemsArray = listWriteItem.ToArray();
+                            var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                            bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
                         }
                         catch (Exception e)
                         {
                             Console.WriteLine("ERRO: {0}", e);
                         }
 
-                        SendDataToIEC(listWriteItem);
                     }
                 }
                 else
                 {
-                    //logNet.WriteInfo(input[0].varName + "read failed");
-                    Console.WriteLine(input[0].varName + "read failed");
+                    logNet.WriteInfo(input[0].varName + "read failed");
+                    //Console.WriteLine(input[0].varName + "read failed");
                 }
             }
 
@@ -287,19 +286,7 @@ namespace PhHslComm
         }
         #endregion
 
-        public void SendDataToIEC(List<WriteItem> writeItems)
-        {
-            try
-            {
-                var writeItemsArray = writeItems.ToArray();
-                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-            }
-            catch(Exception e) 
-            {
-                Console.WriteLine("ERRO: {0}", e);
-            }
-        }
+
 
         //通过数组的起终索引，来发送子数组
         public void SendSubArray(StationInfoStruct_CIP[] input, float[] sourceArray, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient , CallOptions options1)
@@ -318,7 +305,6 @@ namespace PhHslComm
                 var writeItemsArray = listWriteItem.ToArray();
                 var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
                 bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-                //Console.WriteLine(StationName_Now + "send" + result);
             }
 
             catch (Exception e)
@@ -327,12 +313,6 @@ namespace PhHslComm
             }         
           
         }
-
-   
-
-
-
-
 
         //XML标签转换 工位结构体数组的工位名是中文，为了方便XML与字典对应，需要转化为英文
         private string CN2EN(string NameCN)
@@ -375,7 +355,7 @@ namespace PhHslComm
         }
 
         //读取和发送点位名(三个函数重载)
-        public void ReadandSendPointName(OneSecInfoStruct_CIP[] InputStruct, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary)
+        public void ReadandSendPointName(OneSecInfoStruct_CIP[] InputStruct, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
         {
             var listWriteItem = new List<WriteItem>();
             WriteItem[] writeItems = new WriteItem[] { };
@@ -394,16 +374,20 @@ namespace PhHslComm
             }
             try
             {
-                /// ！！！TO DO LIST 这里跟XML的对应不对
                 listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(InputStruct[0].varAnnotation), Arp.Type.Grpc.CoreType.CtStruct, functionEnableNameStruct_IEC));
+                var writeItemsArray = listWriteItem.ToArray();
+                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERRO: {0}", e);
+                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + InputStruct[0].varAnnotation + "ERRO: {0}", e.ToString());
+                //Console.WriteLine("ERRO: {0}", e);
             }
-            SendDataToIEC(listWriteItem);
+
         }
-        public void ReadandSendPointName(String[] InputString, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary)
+        public void ReadandSendPointName(String[] InputString, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
         {
             var listWriteItem = new List<WriteItem>();
             WriteItem[] writeItems = new WriteItem[] { };
@@ -422,16 +406,20 @@ namespace PhHslComm
             }
             try
             {
-                /// ！！！TO DO LIST 这里跟XML的对应不对
                 listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(InputString[0]), Arp.Type.Grpc.CoreType.CtStruct, functionEnableNameStruct_IEC));
+                var writeItemsArray = listWriteItem.ToArray();
+                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERRO: {0}", e);
+                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + InputString[0] + "ERRO: {0}", e.ToString());
+                //Console.WriteLine("ERRO: {0}", e);
             }
-            SendDataToIEC(listWriteItem);
+
         }
-        public void ReadandSendPointName(StationInfoStruct_CIP[] InputStruct, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary)
+        public void ReadandSendPointName(StationInfoStruct_CIP[] InputStruct, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
         {
             var listWriteItem = new List<WriteItem>();
             WriteItem[] writeItems = new WriteItem[] { };
@@ -449,15 +437,18 @@ namespace PhHslComm
                 }
             }
             try
-            {
-                /// ！！！TO DO LIST 这里跟XML的对应不对
+            {            
                 listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(InputStruct[0].varAnnotation), Arp.Type.Grpc.CoreType.CtStruct, functionEnableNameStruct_IEC));
+                var writeItemsArray = listWriteItem.ToArray();
+                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERRO: {0}", e);
+                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + InputStruct[0].varAnnotation + "ERRO: {0}", e.ToString());
+                //Console.WriteLine("ERRO: {0}", e);
             }
-           SendDataToIEC(listWriteItem);
+          
         }
 
 

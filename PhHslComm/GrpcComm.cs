@@ -652,8 +652,32 @@ namespace PhHslComm
             }
         }
 
+        //Write Data to DataAccessService 
+        public ObjectType ReadSingleDataToDataAccessService(IDataAccessService.IDataAccessServiceClient grpcDataAccessServiceClient, IDataAccessServiceReadSingleRequest dataAccessServiceReadSingleRequest, IDataAccessServiceReadSingleResponse dataAccessServiceReadSingleResponse, CallOptions options)
+        {
+            ObjectType result = null;
+            try
+            {
+                dataAccessServiceReadSingleResponse = grpcDataAccessServiceClient.ReadSingle(dataAccessServiceReadSingleRequest, options);
+                var readItem = dataAccessServiceReadSingleResponse.ReturnValue;
 
-       
+                if (readItem.Error.ToString() == "DaeNone")
+                {
+                    result = readItem.Value;
+                }
+                else
+                {
+                    Console.WriteLine("ReadSingleDataToDataAccessService fail:{0}", readItem.Error.ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("result = Exception:{0}", e.ToString());
+            }
+            return result;
+        }
+
+
     }
 
 

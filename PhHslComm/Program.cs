@@ -35,16 +35,20 @@ using SixLabors.ImageSharp;
 using NPOI.SS.Formula.Functions;
 using HslCommunication.Instrument.DLT;
 using SixLabors.ImageSharp.Processing;
+using System.Drawing;
+using System.Net.NetworkInformation;
 
 
 namespace PhHslComm
 {
     class Program
     {
-        #region app初始化（Grpc参数设置，xml文档参数设置和Excel参数设置，CIP通讯参数，实例化的结构体，日志的初始化
+        /// <summary>
+        /// app初始化
+        /// </summary>
 
         // 创建日志
-        const string logsFile = ("/opt/plcnext/apps/Logs.txt");
+        const string logsFile = ("/opt/plcnext/apps/FengZhuangAppLogs.txt");
         //const string logsFile = "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\GuanYu";
         public static ILogNet logNet = new LogNetSingle(logsFile);
 
@@ -59,19 +63,15 @@ namespace PhHslComm
                 DateTime.MaxValue,
                 new CancellationTokenSource().Token);
         public static IDataAccessServiceClient grpcDataAccessServiceClient = null;
-        public static IDataAccessServiceClient grpcDataAccessServiceClient1 = null;
-
-
+       
         //创建ASCII 转换API实例
         public static ToolAPI tool = new ToolAPI();
-
 
         //CIP Client实例化 
         public static OmronComm omronClients = new OmronComm();
         static int clientNum = 7; //CIP的Client最大32，开启7个CIP Client    
         public static OmronConnectedCipNet[] _cip = new OmronConnectedCipNet[clientNum];
         public static OperateResult ret;
-        
 
         //创建三个线程            
         static int thrNum = 3;  //开启三个线程
@@ -114,7 +114,7 @@ namespace PhHslComm
         static OneSecInfoStruct_CIP[] Motor_POTLimit_Err;
         static OneSecInfoStruct_CIP[] Motor_NOTLimit_Err;
         static OneSecInfoStruct_CIP[] Motor_Prevent_Promt;
-        static OneSecInfoStruct_CIP[] Exception_information;   
+        static OneSecInfoStruct_CIP[] Exception_information;
         static OneSecInfoStruct_CIP[] Temperature_Alarm;
         static OneSecInfoStruct_CIP[] Cylinder_Reset_Promt;
         static OneSecInfoStruct_CIP[] Motor_Reset_Promt;
@@ -123,21 +123,26 @@ namespace PhHslComm
         static OneSecInfoStruct_CIP[] Scapegoat_Error;
         static OneSecInfoStruct_CIP[] Door_Error;
         static OneSecInfoStruct_CIP[] out_power;
-       
+
         //点位名
         static OneSecPointNameStruct_IEC oneSecPointNameStruct_IEC = new OneSecPointNameStruct_IEC();
-     
+
         // 设备总览
         static DeviceInfoStruct_IEC[] deviceInfoStruct_IEC;
 
         #endregion
 
-        #endregion
+        // CIP连接状态
+        static OperateResult retConnect;
+
+
+        // 时间变量
+        public static DateTime nowDisplay = DateTime.Now;
         static void Main(string[] args)
         {
-           
+
             int stepNumber = 10;
-  
+
             while (true)
             {
                 switch (stepNumber)
@@ -145,26 +150,33 @@ namespace PhHslComm
 
                     case 10:
                         {
-                            //执行初始化
-                            //建立CIP连接（先判断状态），读取XML和Excel，发点位表
-                            //Grpc连接（先判断状态）
+                            /// <summary>
+                            /// 执行初始化
+                            /// </summary>
+
 
                             #region 读取Excel 
+
+                            logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + "App Start");
 
                             //string excelFilePath = Directory.GetCurrentDirectory() + "\\HGFZData.xlsx";     //PC端测试路径
                             string excelFilePath = "/opt/plcnext/apps/HGFZData.xlsx";                         //EPC存放路径
 
                             XSSFWorkbook excelWorkbook = readExcel.connectExcel(excelFilePath);
-                            if (excelWorkbook != null)
-                            {
-                                Console.WriteLine("excelWorkbook reasd success");
-                                //logNet.WriteInfo("excelWorkbook reasd success");
-                            }
-                            else
-                            {
-                                Console.WriteLine("excelWorkbook reasd fail");
-                                //logNet.WriteError("excelWorkbook reasd fail");
-                            }
+
+                            //Console.WriteLine("ExcelWorkbook read {0}", excelWorkbook != null ? "success" : "fail");
+                            logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  :ExcelWorkbook read ", excelWorkbook != null ? "success" : "fail");
+
+                            //if (excelWorkbook != null)
+                            //{
+                            //    //Console.WriteLine("excelWorkbook reasd success");
+                            //    logNet.WriteInfo("excelWorkbook reasd success");
+                            //}
+                            //else
+                            //{
+                            //    //Console.WriteLine("excelWorkbook reasd fail");
+                            //    logNet.WriteError("excelWorkbook reasd fail");
+                            //}
 
                             #endregion
 
@@ -176,11 +188,13 @@ namespace PhHslComm
                                 //const string filePath = "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\PhHslComm\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml";  //PC中存放的路径 
 
                                 nodeidDictionary = grpcToolInstance.getNodeIdDictionary(filePath);  //将xml中的值写入字典中
+                                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  :NodeID read successfully");
 
                             }
                             catch (Exception e)
                             {
                                 logNet.WriteError("Error:" + e);
+                                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  :NodeID read failed");
                             }
 
                             #endregion
@@ -226,27 +240,42 @@ namespace PhHslComm
                             BarCode = readExcel.ReadOneDeviceInfoConSturct2Info_Excel(excelWorkbook, "设备信息", 6);
                             EarCode = readExcel.ReadOneDeviceInfoConSturct2Info_Excel(excelWorkbook, "设备信息", 7);
 
-                                                   
+
                             #endregion
 
 
-                            #region CIP连接   (TO DO LIST 先检查 后创建）
+                            #region CIP连接   
 
-                            for (int i = 0; i < clientNum; i++)
-                            {
-                                _cip[i] = new OmronConnectedCipNet("192.168.1.31");  //  填写欧姆龙PLC的IP地址
-                                var retIn = _cip[i].ConnectServer();
-                                if (retIn.IsSuccess)
-                                {
-                                    //logNet.WriteInfo("num " + i.ToString() + " connect success!");
-                                    Console.WriteLine("num {0} connect success!", i);
-                                }
-                                else
-                                {
-                                    //logNet.WriteError("num " + i.ToString() + "connect failed!");
-                                    Console.WriteLine("num {0} connect failed!", i);
-                                }
-                            }
+                            //for (int i = 0; i < clientNum; i++)
+                            //{
+                            //    if (_cip[i] == null)
+                            //    {
+                            //        _cip[i] = new OmronConnectedCipNet("192.168.1.31");  //  填写欧姆龙PLC的IP地址
+                            //        retIn = _cip[i].ConnectServer();
+                            //        //logNet.WriteInfo("num " + i.ToString() + retIn.IsSuccess? "success" : "fail");
+                            //        Console.WriteLine("num {0} connect: {1})!", i, retIn.IsSuccess? "success" : "fail");                                   
+                            //    }
+                            //    else
+                            //    {
+                            //        if(retIn.ErrorCode == 0)
+                            //        {
+                            //            Console.WriteLine("Connect open");
+                            //        }
+                            //        else 
+                            //        {
+                            //            _cip[i].ConnectClose();
+                            //            Console.WriteLine("Connect closed");
+                            //            retIn = _cip[i].ConnectServer();
+                            //            //logNet.WriteInfo("num " + i.ToString() + retIn.IsSuccess? "success" : "fail");
+                            //            Console.WriteLine("num {0} connect: {1})!", i, retIn.IsSuccess ? "success" : "fail");
+                            //        }
+
+                            //    }
+
+                            //}
+
+
+
 
                             #endregion
 
@@ -254,12 +283,12 @@ namespace PhHslComm
 
                             var udsEndPoint = new UnixDomainSocketEndPoint("/run/plcnext/grpc.sock");
                             var connectionFactory = new UnixDomainSocketConnectionFactory(udsEndPoint);
-                            
+
                             //grpcDataAccessServiceClient
                             var socketsHttpHandler = new SocketsHttpHandler
                             {
                                 ConnectCallback = connectionFactory.ConnectAsync
-                            };                           
+                            };
                             try
                             {
                                 GrpcChannel channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions  // Create a gRPC channel to the PLCnext unix socket
@@ -283,7 +312,7 @@ namespace PhHslComm
                             var listWriteItem = new List<WriteItem>();
                             WriteItem[] writeItems = new WriteItem[] { };
                             try
-                            {                              
+                            {
                                 listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["DeviceInfo"], Arp.Type.Grpc.CoreType.CtStruct, deviceInfoStruct_IEC[0]));
                                 var writeItemsArray = listWriteItem.ToArray();
                                 var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
@@ -291,20 +320,18 @@ namespace PhHslComm
                             }
                             catch (Exception e)
                             {
-
-                                Console.WriteLine("ERRO: {0}，{1}", e, nodeidDictionary.GetValueOrDefault("DeviceInfo"));
+                                //Console.WriteLine("ERRO: {0}，{1}", e, nodeidDictionary.GetValueOrDefault("DeviceInfo"));
+                                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  DeviceInfo ERRO", e.ToString());
                             }
                             listWriteItem.Clear();
-
-
 
 
                             #region 1000ms数据的点位名
 
                             // 功能安全、生产统计和寿命管理 的点位名发送
-                            omronClients.ReadandSendPointName(Sys_Manual, oneSecPointNameStruct_IEC, 200, grpcToolInstance, nodeidDictionary);   //功能开关 
-                            omronClients.ReadandSendPointName(Production_statistics, oneSecPointNameStruct_IEC, 20, grpcToolInstance, nodeidDictionary);  //生产统计
-                            omronClients.ReadandSendPointName(Cutterused_statistics, oneSecPointNameStruct_IEC, 36, grpcToolInstance, nodeidDictionary);  //寿命管理
+                            omronClients.ReadandSendPointName(Sys_Manual, oneSecPointNameStruct_IEC, 200, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient,options1);   //功能开关 
+                            omronClients.ReadandSendPointName(Production_statistics, oneSecPointNameStruct_IEC, 20, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);  //生产统计
+                            omronClients.ReadandSendPointName(Cutterused_statistics, oneSecPointNameStruct_IEC, 36, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);  //寿命管理
 
                             //将Y6 和Manual_Andon的点位名拼成一个 string[]数组后，再发送 对应OEE表格
                             var stringnumber = Y6.Length + Manual_Andon.Length;
@@ -317,7 +344,7 @@ namespace PhHslComm
                             {
                                 OEEPointName[i + Y6.Length] = Manual_Andon[i].varAnnotation;
                             }
-                            omronClients.ReadandSendPointName(OEEPointName, oneSecPointNameStruct_IEC, 20, grpcToolInstance, nodeidDictionary);  //OEE
+                            omronClients.ReadandSendPointName(OEEPointName, oneSecPointNameStruct_IEC, 20, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);  //OEE
 
 
                             //报警信号的点位名拼成一个 string[]数组，再发送
@@ -341,31 +368,68 @@ namespace PhHslComm
                                 }
                             }
 
-                            omronClients.ReadandSendPointName(AlarmPointName, oneSecPointNameStruct_IEC, 2000, grpcToolInstance, nodeidDictionary);  //报警信号
+                            omronClients.ReadandSendPointName(AlarmPointName, oneSecPointNameStruct_IEC, 2000, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);  //报警信号
 
                             #endregion
 
 
                             #region 六大工位的点位名
-                            omronClients.ReadandSendPointName(chongmo, oneSecPointNameStruct_IEC, 8, grpcToolInstance, nodeidDictionary);  //冲膜
-                            omronClients.ReadandSendPointName(dingfeng, oneSecPointNameStruct_IEC, 8, grpcToolInstance, nodeidDictionary);  //顶封
-                            omronClients.ReadandSendPointName(reya, oneSecPointNameStruct_IEC, 29, grpcToolInstance, nodeidDictionary);  //热压
-                            omronClients.ReadandSendPointName(zuojiaofeng, oneSecPointNameStruct_IEC, 8, grpcToolInstance, nodeidDictionary);  //左角封
-                            omronClients.ReadandSendPointName(youjiaofeng, oneSecPointNameStruct_IEC, 8, grpcToolInstance, nodeidDictionary);  //右角封
-                            omronClients.ReadandSendPointName(cefeng, oneSecPointNameStruct_IEC, 8, grpcToolInstance, nodeidDictionary);  //侧封
+                            omronClients.ReadandSendPointName(chongmo, oneSecPointNameStruct_IEC, 8, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);  //冲膜
+                            omronClients.ReadandSendPointName(dingfeng, oneSecPointNameStruct_IEC, 8, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);  //顶封
+                            omronClients.ReadandSendPointName(reya, oneSecPointNameStruct_IEC, 29, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);  //热压
+                            omronClients.ReadandSendPointName(zuojiaofeng, oneSecPointNameStruct_IEC, 8, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);  //左角封
+                            omronClients.ReadandSendPointName(youjiaofeng, oneSecPointNameStruct_IEC, 8, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);  //右角封
+                            omronClients.ReadandSendPointName(cefeng, oneSecPointNameStruct_IEC, 8, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);  //侧封
 
                             #endregion
-                            stepNumber = 100;
+                            stepNumber = 20;
                         }
 
                         break;
 
+                    case 20:
+                        {
+                            #region CIP连接   
 
-                    case 100:
+                            for (int i = 0; i < clientNum; i++)
+                            {
+                                if (_cip[i] == null)
+                                {
+                                    _cip[i] = new OmronConnectedCipNet("192.168.1.31");  //  填写欧姆龙PLC的IP地址
+                                    var retConnect = _cip[i].ConnectServer();
+                                    //logNet.WriteInfo("num " + i.ToString() + retIn.IsSuccess? "success" : "fail");
+                                    Console.WriteLine("num {0} connect: {1})!", i, retConnect.IsSuccess ? "success" : "fail");
+                                }
+                                else
+                                {
+                                    if (retConnect.ErrorCode == 0)
+                                    {
+                                        Console.WriteLine("Connect open");
+                                    }
+                                    else
+                                    {
+                                        _cip[i].ConnectClose();
+                                        Console.WriteLine("Connect closed");
+                                        retConnect = _cip[i].ConnectServer();
+                                        //logNet.WriteInfo("num " + i.ToString() + retIn.IsSuccess? "success" : "fail");
+                                        Console.WriteLine("num {0} connect: {1})!", i, retConnect.IsSuccess ? "success" : "fail");
+                                    }
+
+                                }
+
+                            }
+
+                            #endregion
+                            stepNumber = 90;
+                        }
+                        break;
+
+
+                    case 90:
                         {
                             #region  线程初始化
                             //读1000ms数据
-                            thr[0] =  new Thread(() =>
+                            thr[0] = new Thread(() =>
                             {
                                 var cip = _cip[0];
                                 var listWriteItem = new List<WriteItem>();
@@ -374,7 +438,7 @@ namespace PhHslComm
                                 bool[] Alarm_Data = new bool[lastIndex + 1];
 
                                 while (true)
-                                {                          
+                                {
                                     TimeSpan start = new TimeSpan(DateTime.Now.Ticks);
 
                                     //读取报警信号总数组
@@ -399,7 +463,7 @@ namespace PhHslComm
                                             var IECAlarmNumber = 2000;
                                             var AlarmValue = new bool[IECAlarmNumber];  //与IEC对应 2000 每次都清空
                                             var StartIndex = 0;
-                                            var ArrayIndex = 0;                                         
+                                            var ArrayIndex = 0;
 
                                             //List里面元素的顺序不可以改变，与点位名的List要对应
                                             List<OneSecInfoStruct_CIP[]> alarmGroups = new List<OneSecInfoStruct_CIP[]> {
@@ -448,9 +512,9 @@ namespace PhHslComm
 
 
                                     //读取非报警信号 Sys_Manual、Production_statistics、Cutterused_statistics的顺序不可以改变，与点位名发送一致
-                                    omronClients.ReadandSendOneSecData(Sys_Manual, cip, 200, grpcToolInstance, nodeidDictionary);
-                                    omronClients.ReadandSendOneSecData(Production_statistics, cip, 20, grpcToolInstance, nodeidDictionary);
-                                    omronClients.ReadandSendOneSecData(Cutterused_statistics, cip, 36, grpcToolInstance, nodeidDictionary);
+                                    omronClients.ReadandSendOneSecData(Sys_Manual, cip, 200, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);
+                                    omronClients.ReadandSendOneSecData(Production_statistics, cip, 20, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);
+                                    omronClients.ReadandSendOneSecData(Cutterused_statistics, cip, 36, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);
 
                                     bool[] Y6_temp = omronClients.ReadOneSecData(Y6, cip, grpcToolInstance, nodeidDictionary);
                                     bool[] Manual_Andon_temp = omronClients.ReadOneSecData(Manual_Andon, cip, grpcToolInstance, nodeidDictionary);
@@ -509,7 +573,7 @@ namespace PhHslComm
                                     TimeSpan start = new TimeSpan(DateTime.Now.Ticks);
 
                                     #region 先一起读上来一整个数组，触发信号来了再通过Grpc发送
-                                    
+
                                     //读取报警数组的最后一个索引数，索引数+1 等于数组元素数量
                                     int lastIndex = cefeng[cefeng.Length - 1].varIndex;
                                     var Station_Data = new float[lastIndex + 1];
@@ -610,6 +674,7 @@ namespace PhHslComm
                                         int sleepTime = 100 - (int)dur.TotalMilliseconds;
                                         Thread.Sleep(sleepTime);
                                     }
+
                                 }
                             });
 
@@ -624,7 +689,7 @@ namespace PhHslComm
                                 StringBuilder[] sbClearManual = new StringBuilder[NumberOfStation];
                                 StringBuilder[] sbBatteryMemory = new StringBuilder[NumberOfStation];
                                 StringBuilder[] sbBarCode = new StringBuilder[NumberOfStation];
-                                StringBuilder[] sbEarCode = new StringBuilder[NumberOfStation];                         
+                                StringBuilder[] sbEarCode = new StringBuilder[NumberOfStation];
 
                                 //StringBuilder数组初始化
                                 for (int i = 0; i < NumberOfStation; i++)
@@ -638,8 +703,8 @@ namespace PhHslComm
 
                                 var listWriteItem = new List<WriteItem>();
                                 WriteItem[] writeItems = new WriteItem[] { };
-    
-                                stringStruct[] sendStringtoIEC =new stringStruct[74];
+
+                                stringStruct[] sendStringtoIEC = new stringStruct[74];
 
                                 while (true)
                                 {
@@ -654,7 +719,7 @@ namespace PhHslComm
                                         sbBarCode[i].Clear();
                                         sbEarCode[i].Clear();
                                     }
- 
+
                                     omronClients.ReadDeviceInfoConSturct1(Auto_Process, _cip[2], sbAutoProcess);
                                     omronClients.ReadDeviceInfoConSturct1(Clear_Manual, _cip[3], sbClearManual);
                                     omronClients.ReadDeviceInfoConSturct1(Battery_Memory, _cip[4], sbBatteryMemory);
@@ -717,7 +782,7 @@ namespace PhHslComm
                                         //combinedString.Append(sbEarCode[i]);
                                         //tempstring = combinedString.ToString().Replace(" ", "");
                                         tempstring = combinedString.ToString();
-                                        sendStringtoIEC[i-1].str = tempstring; //整合到结构体数组中 （一把子把74个工位的数据发送给IEC）
+                                        sendStringtoIEC[i - 1].str = tempstring; //整合到结构体数组中 （一把子把74个工位的数据发送给IEC）
 
                                         #region Grpc发送数据给IEC
 
@@ -728,7 +793,7 @@ namespace PhHslComm
                                                 listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["Station"], Arp.Type.Grpc.CoreType.CtArray, sendStringtoIEC));
                                                 var writeItemsArray = listWriteItem.ToArray();
                                                 var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                                                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);                    
+                                                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
                                             }
                                             catch (Exception e)
                                             {
@@ -757,36 +822,50 @@ namespace PhHslComm
                             });
                             #endregion
 
-                            while (true)
+                            stepNumber = 100;
+
+                        }
+                        break;
+
+                    
+
+                    case 100:
+                        {
+                            if (thr[0].ThreadState == ThreadState.Unstarted && thr[1].ThreadState == ThreadState.Unstarted && thr[2].ThreadState == ThreadState.Unstarted)
                             {
-                                if (thr[0].ThreadState == ThreadState.Unstarted && thr[1].ThreadState == ThreadState.Unstarted && thr[2].ThreadState == ThreadState.Unstarted)
-                                {                               
-                                    try
-                                    {
-                                        #region 开启三大数采线程
+                                try
+                                {
+                                    #region 开启三大数采线程
 
-                                        thr[0].Start();  // 读1000ms数据
+                                    thr[0].Start();  // 读1000ms数据
+                                   
+                                    thr[1].Start(); //读六大工位信息
 
-                                        thr[1].Start(); //读六大工位信息
-
-                                        thr[2].Start();  //读设备信息                                       
-                                        #endregion
-
-                                    }
-                                    catch
-                                    {
-                                        Console.WriteLine("Thread quit");
-                                        stepNumber = 1000;
-                                        break;
-
-                                    }
+                                    thr[2].Start();  //读设备信息                                       
+                                    #endregion
 
                                 }
+                                catch
+                                {
+                                    Console.WriteLine("Thread quit");
+                                    stepNumber = 1000;
+                                    break;
 
-                             Thread.Sleep(100);  
-
+                                }
                             }
-                            break;
+
+                            IPStatus iPStatus;
+                            iPStatus = _cip[0].IpAddressPing();  //判断与PLC的物理连接状态
+                            
+                            if (iPStatus != 0)
+                            {
+                                Console.WriteLine("Ping Omron PLC failed");
+
+                            };
+
+                            Thread.Sleep(100);
+
+                        break;
                         }
 
 
@@ -804,17 +883,13 @@ namespace PhHslComm
 
                 }
 
+
             }
 
-        }                         
+        }
 
 
 
 
     }
 }
-
-
-
-
-

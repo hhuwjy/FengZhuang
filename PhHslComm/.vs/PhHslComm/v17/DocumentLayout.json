@@ -1,0 +1,105 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\OmronComm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:OmronComm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\GrpcComm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GrpcComm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\PhHslComm.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:PhHslComm.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GrpcSubscribeNodes\\GrpcSubscribeNodes.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "GrpcSubscribeNodes.xml",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
+              "RelativeDocumentMoniker": "GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
+              "RelativeToolTip": "GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
+              "ViewState": "AQIAABUAAAAAAAAAAADwvyUAAAAVAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
+              "WhenOpened": "2024-05-13T08:31:51.553Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PhHslComm.csproj",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\PhHslComm.csproj",
+              "RelativeDocumentMoniker": "PhHslComm.csproj",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\PhHslComm.csproj",
+              "RelativeToolTip": "PhHslComm.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAA0AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-05-13T08:05:11.004Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAADwvxIAAAATAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-13T08:05:08.786Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "GrpcComm.cs",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\GrpcComm.cs",
+              "RelativeDocumentMoniker": "GrpcComm.cs",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\GrpcComm.cs",
+              "RelativeToolTip": "GrpcComm.cs",
+              "ViewState": "AQIAADMAAAAAAAAAAAAAAE0AAAAqAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-13T08:05:06.789Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "OmronComm.cs",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\OmronComm.cs",
+              "RelativeDocumentMoniker": "OmronComm.cs",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\PhHslComm\\PhHslComm\\OmronComm.cs",
+              "RelativeToolTip": "OmronComm.cs",
+              "ViewState": "AQIAAGYAAAAAAAAAAAAAAHsAAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-13T08:05:05.349Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

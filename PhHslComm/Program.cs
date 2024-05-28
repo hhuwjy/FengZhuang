@@ -173,7 +173,7 @@ namespace PhHslComm
                             try
                             {
                                 const string filePath = "/opt/plcnext/apps/GrpcSubscribeNodes.xml";             //EPC中存放的路径  
-                                //const string filePath = "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\GuanYu\\PhHslComm\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml";  //PC中存放的路径 
+                                //const string filePath = "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\PhHslComm\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml";  //PC中存放的路径 
 
                                 nodeidDictionary = grpcToolInstance.getNodeIdDictionary(filePath);  //将xml中的值写入字典中
 
@@ -230,8 +230,6 @@ namespace PhHslComm
                             #endregion
 
 
-
-
                             #region CIP连接   (TO DO LIST 先检查 后创建）
 
                             for (int i = 0; i < clientNum; i++)
@@ -285,8 +283,7 @@ namespace PhHslComm
                             var listWriteItem = new List<WriteItem>();
                             WriteItem[] writeItems = new WriteItem[] { };
                             try
-                            {
-                                //  TODO LIST  XML的要改
+                            {                              
                                 listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["DeviceInfo"], Arp.Type.Grpc.CoreType.CtStruct, deviceInfoStruct_IEC[0]));
                                 var writeItemsArray = listWriteItem.ToArray();
                                 var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
@@ -673,12 +670,53 @@ namespace PhHslComm
                                         StringBuilder combinedString = new StringBuilder();   //每一行工位都是一个string
 
                                         combinedString.Append(sbAutoProcess[i]);
-                                        combinedString.Append(sbBatteryMemory[i]);
-                                        combinedString.Append(sbClearManual[i]);
-                                        combinedString.Append(sbBarCode[i]);
-                                        combinedString.Append(sbEarCode[i]);
-                                        tempstring = combinedString.ToString().Replace(" ", "");
-                                    
+                                        if (sbBatteryMemory[i].Length == 0)
+                                        {
+                                            combinedString.Append(sbBatteryMemory[i] + " ,");
+
+                                        }
+                                        else
+                                        {
+                                            combinedString.Append(sbBatteryMemory[i]);
+                                        }
+
+                                        if (sbClearManual[i].Length == 0)
+                                        {
+                                            combinedString.Append(sbClearManual[i] + " ,");
+
+                                        }
+                                        else
+                                        {
+                                            combinedString.Append(sbClearManual[i]);
+                                        }
+
+                                        if (sbBarCode[i].Length == 0)
+                                        {
+                                            combinedString.Append(sbBarCode[i] + " ,");
+
+                                        }
+                                        else
+                                        {
+                                            combinedString.Append(sbBarCode[i]);
+                                        }
+
+                                        if (sbEarCode[i].Length == 0)
+                                        {
+                                            combinedString.Append(sbEarCode[i] + " ,");
+
+                                        }
+                                        else
+                                        {
+                                            combinedString.Append(sbEarCode[i]);
+                                        }
+
+
+                                        //combinedString.Append(sbBatteryMemory[i]);
+                                        //combinedString.Append(sbClearManual[i]);
+                                        //combinedString.Append(sbBarCode[i]);
+                                        //combinedString.Append(sbEarCode[i]);
+                                        //tempstring = combinedString.ToString().Replace(" ", "");
+                                        tempstring = combinedString.ToString();
                                         sendStringtoIEC[i-1].str = tempstring; //整合到结构体数组中 （一把子把74个工位的数据发送给IEC）
 
                                         #region Grpc发送数据给IEC
@@ -731,8 +769,7 @@ namespace PhHslComm
 
                                         thr[1].Start(); //读六大工位信息
 
-                                        thr[2].Start();  //读设备信息
-
+                                        thr[2].Start();  //读设备信息                                       
                                         #endregion
 
                                     }

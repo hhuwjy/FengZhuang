@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PhHslComm")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+40161f1f8af8507caee1d458d5455461b23583d8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ed0b4697a69474e96df1463807c4174a691ddcc2")]
 [assembly: System.Reflection.AssemblyProductAttribute("PhHslComm")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PhHslComm")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

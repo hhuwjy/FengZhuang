@@ -1,0 +1,4 @@
+D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\FengZhuang_EIP\PhHslComm\bin\Release\net6.0\publish\linux-x64\PhHslComm.pdb
+D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\FengZhuang_EIP\PhHslComm\bin\Release\net6.0\publish\linux-x64\libgrpc_csharp_ext.x64.so
+D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\FengZhuang_EIP\PhHslComm\bin\Release\net6.0\publish\linux-x64\libSystem.IO.Ports.Native.so
+D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\FengZhuang_EIP\PhHslComm\bin\Release\net6.0\publish\linux-x64\PhHslComm

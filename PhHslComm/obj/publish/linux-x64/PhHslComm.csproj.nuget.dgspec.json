@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\GuanYu\\PhHslComm\\PhHslComm.csproj": {}
+    "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\PhHslComm\\PhHslComm.csproj": {}
   },
   "projects": {
-    "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\GuanYu\\PhHslComm\\PhHslComm.csproj": {
+    "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\PhHslComm\\PhHslComm.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\GuanYu\\PhHslComm\\PhHslComm.csproj",
+        "projectUniqueName": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\PhHslComm\\PhHslComm.csproj",
         "projectName": "PhHslComm",
-        "projectPath": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\GuanYu\\PhHslComm\\PhHslComm.csproj",
+        "projectPath": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\PhHslComm\\PhHslComm.csproj",
         "packagesPath": "C:\\Users\\eq9ifs\\.nuget\\packages\\",
-        "outputPath": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\GuanYu\\PhHslComm\\obj\\publish\\linux-x64\\",
+        "outputPath": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\PhHslComm\\obj\\publish\\linux-x64\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\eq9ifs\\AppData\\Roaming\\NuGet\\NuGet.Config",

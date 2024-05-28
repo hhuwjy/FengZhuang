@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "t8/+9zHmgQ/jYHp3+nTSuw5UEQ1R/SDg0JjHl/+Gjb3IjeyiQMQEDBRkZy0KUZpZWgW0y1eGgeKo2rOFtL+zjA==",
+  "dgSpecHash": "T7L7/mI9u4O2gRItW2hx5yZWbP6mbiDd3Qin7ZudKD0+UoODs/Xwo29qTu99nbpKrBdq5ZXxJb0zLrsXX6nfXQ==",
   "success": true,
-  "projectFilePath": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\GuanYu\\PhHslComm\\PhHslComm.csproj",
+  "projectFilePath": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\PhHslComm\\PhHslComm.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\eq9ifs\\.nuget\\packages\\bouncycastle.cryptography\\2.3.0\\bouncycastle.cryptography.2.3.0.nupkg.sha512",
     "C:\\Users\\eq9ifs\\.nuget\\packages\\enums.net\\4.0.1\\enums.net.4.0.1.nupkg.sha512",

@@ -146,7 +146,7 @@ namespace PhHslComm
  
         #region Function 读取1000ms的数据 （功能开关，生产统计，报警信号，寿命管理, OEE)
 
-        public bool[] ReadOneSecData(OneSecInfoStruct_CIP[] input, OmronConnectedCipNet cip, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary)
+        public bool[] ReadOneSecData(OneSecInfoStruct_CIP[] input, OmronConnectedCipNet cip)
         {           
             ushort length = (ushort)input.Length;
             var AlarmValue = new bool[length];

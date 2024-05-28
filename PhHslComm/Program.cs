@@ -516,8 +516,8 @@ namespace PhHslComm
                                     omronClients.ReadandSendOneSecData(Production_statistics, cip, 20, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);
                                     omronClients.ReadandSendOneSecData(Cutterused_statistics, cip, 36, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);
 
-                                    bool[] Y6_temp = omronClients.ReadOneSecData(Y6, cip, grpcToolInstance, nodeidDictionary);
-                                    bool[] Manual_Andon_temp = omronClients.ReadOneSecData(Manual_Andon, cip, grpcToolInstance, nodeidDictionary);
+                                    bool[] Y6_temp = omronClients.ReadOneSecData(Y6, cip);
+                                    bool[] Manual_Andon_temp = omronClients.ReadOneSecData(Manual_Andon, cip);
 
                                     var IECOEENumber = 20;
                                     var OEEValue = new bool[IECOEENumber];  //与IEC对应 20

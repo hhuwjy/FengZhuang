@@ -71,7 +71,7 @@ namespace PhHslComm
         public static OmronComm omronClients = new OmronComm();
         static int clientNum = 7; //CIP的Client最大32，开启7个CIP Client    
         public static OmronConnectedCipNet[] _cip = new OmronConnectedCipNet[clientNum];
-        public static OperateResult ret;
+        //public static OperateResult ret;
 
         //创建三个线程            
         static int thrNum = 3;  //开启三个线程
@@ -395,7 +395,8 @@ namespace PhHslComm
                             {
                                 if (_cip[i] == null)
                                 {
-                                    _cip[i] = new OmronConnectedCipNet("192.168.1.31");  //  填写欧姆龙PLC的IP地址
+
+                                    _cip[i] = new OmronConnectedCipNet(deviceInfoStruct_IEC[0].strIPAddress);  //  填写欧姆龙PLC的IP地址
                                     var retConnect = _cip[i].ConnectServer();
                                     //logNet.WriteInfo("num " + i.ToString() + retIn.IsSuccess? "success" : "fail");
                                     Console.WriteLine("num {0} connect: {1})!", i, retConnect.IsSuccess ? "success" : "fail");
@@ -831,6 +832,7 @@ namespace PhHslComm
 
                     case 100:
                         {
+                            //开启线程
                             if (thr[0].ThreadState == ThreadState.Unstarted && thr[1].ThreadState == ThreadState.Unstarted && thr[2].ThreadState == ThreadState.Unstarted)
                             {
                                 try
@@ -854,12 +856,15 @@ namespace PhHslComm
                                 }
                             }
 
+
+                            //检测PLCnext和Omron PLC之间的连接
                             IPStatus iPStatus;
                             iPStatus = _cip[0].IpAddressPing();  //判断与PLC的物理连接状态
                             
                             if (iPStatus != 0)
                             {
-                                Console.WriteLine("Ping Omron PLC failed");
+                                //Console.WriteLine("Ping Omron PLC failed");
+                                logNet.WriteError("Ping Omron PLC failed");
 
                             };
 

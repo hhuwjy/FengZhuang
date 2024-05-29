@@ -24,11 +24,13 @@ namespace PhHslComm
             else if (value == 0)
             {
                 asciiString.Append("");
-
+                
             }
             else
             {
-                throw new Exception("ASCII Code is not valid.");
+                //throw new Exception("ASCII Code is not valid.");
+                asciiString.Append("");
+                Program.logNet.WriteError("ASCII Code is not valid.");
             }
 
 

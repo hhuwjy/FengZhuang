@@ -35,30 +35,30 @@
   <Aliases>
 
     <!--DustingMachineCell-->
-    <Alias Alias="zuojiaofeng">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.zuojiaofeng</Alias>
-	<Alias Alias="youjiaofeng">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.youjiaofeng</Alias>
-	<Alias Alias="dingfeng">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.dingfeng</Alias>
-	<Alias Alias="chongmo">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.chongmo</Alias>
-	<Alias Alias="reya">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.reya</Alias>
-	<Alias Alias="cefeng">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.cefeng</Alias>
-    <Alias Alias="SYS_Manual[0]">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_arrxFunctionEnableValue_FZ1</Alias>
-	<Alias Alias="Alarm">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_arrxAlarmInfoValue_FZ1</Alias>
-	<Alias Alias="Production_statistics[0]">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_arrdiProductionDataValue_FZ1</Alias>
-	<Alias Alias="Cutterused_statistics[0]">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_arrdiLifeManagementValue_FZ1</Alias>
-	<Alias Alias="OEE">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_arrxOEEInfoValue_FZ1</Alias>
-	<Alias Alias="DeviceInfo">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtDeviceInfo_FZ1</Alias>
-	<Alias Alias="Station">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_arrudtStationInfo_FZ1</Alias>
-	<Alias Alias="FS_1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtFunctionEnableName_FZ1</Alias>
-	<Alias Alias="PS_1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtProductionDataName_FZ1</Alias>
-	<Alias Alias="LM_1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtLifeManagementName_FZ1</Alias>
-	<Alias Alias="AS_1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtAlarmInfoName_FZ1</Alias>
-	<Alias Alias="OD_1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtOEEInfoName_FZ1</Alias>	  
-	<Alias Alias="S_A1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtChongMoName_FZ1</Alias>
-	<Alias Alias="S_B1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtReYaName_FZ1</Alias>
-	<Alias Alias="S_C1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtDingFengName_FZ1</Alias>
-	<Alias Alias="S_D1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtZuoJiaoFengName_FZ1</Alias>
-	<Alias Alias="S_E1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtYouJiaoFengName_FZ1</Alias>
-	<Alias Alias="S_F1">Arp.Plc.Eclr/Prg_DataCollection_FengZhuang1.G_udtCeFengName_FZ1</Alias>
+    <Alias Alias="zuojiaofeng">Arp.Plc.Eclr/G_arrrZuoJiaoFengValue_FZ1</Alias>
+	<Alias Alias="youjiaofeng">Arp.Plc.Eclr/G_arrYouJiaoFengValue_FZ1</Alias>
+	<Alias Alias="dingfeng">Arp.Plc.Eclr/G_arDingFengValue_FZ1</Alias>
+	<Alias Alias="chongmo">Arp.Plc.Eclr/G_arChongMoValue_FZ1</Alias>
+	<Alias Alias="reya">Arp.Plc.Eclr/G_arReYaValue_FZ1</Alias>
+	<Alias Alias="cefeng">Arp.Plc.Eclr/G_arCeFengValue_FZ1</Alias>
+    <Alias Alias="SYS_Manual[0]">Arp.Plc.Eclr/G_arrxFunctionEnableValue_FZ1</Alias>
+	<Alias Alias="Alarm">Arp.Plc.Eclr/G_arrxAlarmInfoValue_FZ1</Alias>
+	<Alias Alias="Production_statistics[0]">Arp.Plc.Eclr/G_arrdiProductionDataValue_FZ1</Alias>
+	<Alias Alias="Cutterused_statistics[0]">Arp.Plc.Eclr/G_arrdiLifeManagementValue_FZ1</Alias>
+	<Alias Alias="OEE">Arp.Plc.Eclr/G_arrxOEEInfoValue_FZ1</Alias>
+	<Alias Alias="DeviceInfo">Arp.Plc.Eclr/G_udtDeviceInfo_FZ1</Alias>
+	<Alias Alias="Station">Arp.Plc.Eclr/G_arrudtStationInfo_FZ1</Alias>
+	<Alias Alias="FS_1">Arp.Plc.Eclr/G_udtFunctionEnableName_FZ1</Alias>
+	<Alias Alias="PS_1">Arp.Plc.Eclr/G_udtProductionDataName_FZ1</Alias>
+	<Alias Alias="LM_1">Arp.Plc.Eclr/G_udtLifeManagementName_FZ1</Alias>
+	<Alias Alias="AS_1">Arp.Plc.Eclr/G_udtAlarmInfoName_FZ1</Alias>
+	<Alias Alias="OD_1">Arp.Plc.Eclr/G_udtOEEInfoName_FZ1</Alias>	  
+	<Alias Alias="S_A1">Arp.Plc.Eclr/G_udtChongMoName_FZ1</Alias>
+	<Alias Alias="S_B1">Arp.Plc.Eclr/G_udtReYaName_FZ1</Alias>
+	<Alias Alias="S_C1">Arp.Plc.Eclr/G_udtDingFengName_FZ1</Alias>
+	<Alias Alias="S_D1">Arp.Plc.Eclr/G_udtZuoJiaoFengName_FZ1</Alias>
+	<Alias Alias="S_E1">Arp.Plc.Eclr/G_udtYouJiaoFengName_FZ1</Alias>
+	<Alias Alias="S_F1">Arp.Plc.Eclr/G_udtCeFengName_FZ1</Alias>
 	 
 
 	 

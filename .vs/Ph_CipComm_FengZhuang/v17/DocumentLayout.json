@@ -1,0 +1,119 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\grpcsubscribenodes\\grpcsubscribenodes.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\grpcsubscribenodes\\grpcsubscribenodes.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\omroncomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\omroncomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\readfromexcel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\readfromexcel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\toolapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\toolapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\grpccomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\grpccomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "GrpcComm.cs",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\GrpcComm.cs",
+              "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\GrpcComm.cs",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\GrpcComm.cs",
+              "RelativeToolTip": "Ph_CipComm_FengZhuang\\GrpcComm.cs",
+              "ViewState": "AQIAAOcAAAAAAAAAAAArwPYAAAAXAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-31T10:05:33.356Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "GrpcSubscribeNodes.xml",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
+              "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
+              "RelativeToolTip": "Ph_CipComm_FengZhuang\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
+              "ViewState": "AQIAABoAAAAAAAAAAAAAACcAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
+              "WhenOpened": "2024-05-31T07:59:33.693Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ToolAPI.cs",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\ToolAPI.cs",
+              "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\ToolAPI.cs",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\ToolAPI.cs",
+              "RelativeToolTip": "Ph_CipComm_FengZhuang\\ToolAPI.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-31T06:06:03.411Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ReadFromExcel.cs",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\ReadFromExcel.cs",
+              "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\ReadFromExcel.cs",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\ReadFromExcel.cs",
+              "RelativeToolTip": "Ph_CipComm_FengZhuang\\ReadFromExcel.cs",
+              "ViewState": "AQIAANMAAAAAAAAAAAAiwOQAAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-31T06:05:54.195Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Program.cs",
+              "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\Program.cs",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Program.cs",
+              "RelativeToolTip": "Ph_CipComm_FengZhuang\\Program.cs",
+              "ViewState": "AQIAAD8DAAAAAAAAAAAAAFEDAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-31T06:05:35.782Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "OmronComm.cs",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\OmronComm.cs",
+              "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\OmronComm.cs",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\OmronComm.cs",
+              "RelativeToolTip": "Ph_CipComm_FengZhuang\\OmronComm.cs",
+              "ViewState": "AQIAAB8BAAAAAAAAAAAYwCsBAABBAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-31T06:05:23.957Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,0 @@
-obj\Release\net6.0\linux-x64\plc\gds/ReadItem.cs: Protobuf/Plc/Gds/DataAccessError.proto\
- Protobuf/ArpTypes.proto\
- Protobuf/Plc/Gds/ReadItem.proto

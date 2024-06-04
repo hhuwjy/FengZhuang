@@ -1,8 +1,0 @@
-{
-  "data": [
-      {
-        "name": "SYS_Manual",
-        "values": [],
-        "length":152
-      }
-}

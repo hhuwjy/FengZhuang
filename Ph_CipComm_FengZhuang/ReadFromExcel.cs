@@ -749,14 +749,19 @@ public class ReadExcel
                     string[] values = (string[])value;
                     for (int i = 0; i < sheet.LastRowNum; i++)
                     {
-                        if (i < values.Length)
+                        if (sheet.GetRow(i + 1).GetCell(column)!=null)
                         {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i]);
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i]);
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
                         }
-                        else
-                        {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                        }
+                       
 
                     }
                 }
@@ -765,21 +770,26 @@ public class ReadExcel
                     StringBuilder[] values = (StringBuilder[])value;
                     for (int i = 0; i < sheet.LastRowNum; i++)
                     {
-                        if (i < values.Length)
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
                         {
-                            if(values[i] != null)
+                            if (i < values.Length)
                             {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i].ToString());
+                                if (values[i] != null)
+                                {
+                                    sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i].ToString());
+                                }
+                                else
+                                {
+                                    sheet.GetRow(i + 1).GetCell(column).SetCellValue("");
+                                }
                             }
                             else
                             {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("");
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
                             }
+
                         }
-                        else
-                        {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                        }
+                       
 
                     }
                 }
@@ -790,15 +800,19 @@ public class ReadExcel
                     bool[] values = (bool[])value;
                     for (int i = 0; i < sheet.LastRowNum; i++)
                     {
-                      
-                        if (i < values.Length)
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
                         {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
                         }
-                        else
-                        {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                        }
+                            
                     }
                 }
                 if (value.GetType() == typeof(float[]))
@@ -846,14 +860,19 @@ public class ReadExcel
                     Int16[] values = (Int16[])value;
                     for (int i = 0; i < sheet.LastRowNum; i++)
                     {
-                        if (i < values.Length)
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
                         {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
                         }
-                        else
-                        {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                        }
+                           
                     }
                 }
                 if (value.GetType() == typeof(Int32[]))
@@ -881,14 +900,19 @@ public class ReadExcel
                     Int64[] values = (Int64[])value;
                     for (int i = 0; i < sheet.LastRowNum; i++)
                     {
-                        if (i < values.Length)
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
                         {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
                         }
-                        else
-                        {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                        }
+                            
                     }
                 }
                 if (value.GetType() == typeof(byte[]))
@@ -896,14 +920,18 @@ public class ReadExcel
                     byte[] values = (byte[])value;
                     for (int i = 0; i < sheet.LastRowNum; i++)
                     {
-                        if (i < values.Length)
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
                         {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
                         }
-                        else
-                        {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                        }
+                            
                     }
                 }
                 if (value.GetType() == typeof(char[]))
@@ -911,14 +939,20 @@ public class ReadExcel
                     char[] values = (char[])value;
                     for (int i = 0; i < sheet.LastRowNum; i++)
                     {
-                        if (i < values.Length)
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
                         {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
+
                         }
-                        else
-                        {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                        }
+                           
                     }
                 }
                 if (value.GetType() == typeof(double[]))
@@ -926,14 +960,19 @@ public class ReadExcel
                     double[] values = (double[])value;
                     for (int i = 0; i < sheet.LastRowNum; i++)
                     {
-                        if (i < values.Length)
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
                         {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
                         }
-                        else
-                        {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                        }
+                           
                     }
                 }
 

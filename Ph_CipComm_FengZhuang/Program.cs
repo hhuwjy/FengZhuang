@@ -50,7 +50,8 @@ namespace Ph_CipComm_FengZhuang
         // 创建日志
         const string logsFile = ("/opt/plcnext/apps/FengZhuangAppLogs.txt");
         //const string logsFile = "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\FengZhuangAppLogs.txt";
-        public static ILogNet logNet = new LogNetSingle(logsFile);
+        
+        public static ILogNet logNet = new LogNetFileSize(logsFile, 5 * 1024 * 1024); //限制了日志大小
 
         //创建Grpc实例
         public static GrpcTool grpcToolInstance = new GrpcTool();
@@ -129,17 +130,13 @@ namespace Ph_CipComm_FengZhuang
         //点位名
         static OneSecPointNameStruct_IEC oneSecPointNameStruct_IEC = new OneSecPointNameStruct_IEC();
 
-        //（六大工位，生产统计，寿命管理 ，电芯码 、极耳码、OEE数据）数据暂存结构体
-        static AllDataReadfromCIP allDataReadfromCIP = new AllDataReadfromCIP();
+        ////（六大工位，生产统计，寿命管理 ，电芯码 、极耳码、OEE数据）数据暂存结构体
+        //static AllDataReadfromCIP allDataReadfromCIP = new AllDataReadfromCIP();
 
         // 设备总览
         static DeviceInfoStruct_IEC[] deviceInfoStruct_IEC;
 
         #endregion
-
-        // CIP连接状态
-        static OperateResult retConnect;
-
 
         // 时间变量
         public static DateTime nowDisplay = DateTime.Now;
@@ -155,6 +152,9 @@ namespace Ph_CipComm_FengZhuang
             bool isThreadOneRunning = false;
             bool isThreadTwoRunning = false;
             bool isThreadThreeRunning = false;
+            int IecTriggersNumber = 0;
+
+            AllDataReadfromCIP allDataReadfromCIP = new AllDataReadfromCIP();
 
             #region 从xml获取nodeid，Grpc发送到对应变量时使用，注意xml中的别名要和对应类的属性名一致 
             try
@@ -163,13 +163,12 @@ namespace Ph_CipComm_FengZhuang
                 //const string filePath = "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml";  //PC中存放的路径 
 
                 nodeidDictionary = grpcToolInstance.getNodeIdDictionary(filePath);  //将xml中的值写入字典中
-                logNet.WriteInfo(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  :NodeID read successfully");
+                logNet.WriteInfo("NodeID xml文件读取成功");
 
             }
             catch (Exception e)
             {
-                logNet.WriteError("Error:" + e);
-                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  :NodeID read failed");
+                logNet.WriteError("NodeID xml文件读取失败："+ e);
             }
             #endregion
 
@@ -222,7 +221,7 @@ namespace Ph_CipComm_FengZhuang
                          
                             #region 读取Excel 
 
-                            logNet.WriteInfo(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + " :App Start");
+                            logNet.WriteInfo("封装设备数采APP已启动");
 
                             //string excelFilePath = Directory.GetCurrentDirectory() + "\\HGFZData.xlsx";     //PC端测试路径
                             string excelFilePath = "/opt/plcnext/apps/HGFZData.xlsx";                         //EPC存放路径
@@ -232,11 +231,11 @@ namespace Ph_CipComm_FengZhuang
                             Console.WriteLine("ExcelWorkbook read {0}", excelWorkbook != null ? "success" : "fail");
                             if (excelWorkbook != null)
                             {
-                                logNet.WriteInfo(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  :ExcelWorkbook read success");
+                                logNet.WriteInfo("Excel读取成功");
                             }
                             else
                             {
-                                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  :ExcelWorkbook read fail");
+                                logNet.WriteError("Excel读取失败");
                             }
                            
 
@@ -248,11 +247,13 @@ namespace Ph_CipComm_FengZhuang
                             listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["flag_finishReadExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, tempFlag_finishReadExcelFile));
                             if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                             {
-                                Console.WriteLine("{0}      flag_finishReadExcelFile写入IEC: success", DateTime.Now);
+                                //Console.WriteLine("{0}      flag_finishReadExcelFile写入IEC: success", DateTime.Now);
+                                logNet.WriteInfo("[Grpc]", "flag_finishReadExcelFile 写入IEC成功");
                             }
                             else
                             {
-                                Console.WriteLine("{0}      flag_finishReadExcelFile写入IEC: fail", DateTime.Now);
+                                //Console.WriteLine("{0}      flag_finishReadExcelFile写入IEC: fail", DateTime.Now);
+                                logNet.WriteError("[Grpc]", "flag_finishReadExcelFile 写入IEC失败");
                             }
                             #endregion
 
@@ -297,15 +298,11 @@ namespace Ph_CipComm_FengZhuang
                             BarCode = readExcel.ReadOneDeviceInfoConSturct2Info_Excel(excelWorkbook, "设备信息", "电芯条码地址（REAL)");
                             EarCode = readExcel.ReadOneDeviceInfoConSturct2Info_Excel(excelWorkbook, "设备信息", "极耳码地址(REAL)");
 
-
                             #endregion
 
 
                             #region 单独设备总览表 + 发送
                             deviceInfoStruct_IEC = readExcel.ReadDeviceInfo_Excel(excelWorkbook, "封装设备总览");
-
-                            //var listWriteItem = new List<WriteItem>();
-                            //WriteItem[] writeItems = new WriteItem[] { };
 
                             listWriteItem.Clear();
                             try
@@ -318,10 +315,9 @@ namespace Ph_CipComm_FengZhuang
                             catch (Exception e)
                             {
                                 //Console.WriteLine("ERRO: {0}，{1}", e, nodeidDictionary.GetValueOrDefault("DeviceInfo"));
-                                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  DeviceInfo ERRO", e.ToString());
+                                logNet.WriteError("[Grpc]","封装设备总览表格 数据发送 失败" + e);
                             }
-                            //listWriteItem.Clear();
-
+ 
                             #endregion
 
 
@@ -397,34 +393,18 @@ namespace Ph_CipComm_FengZhuang
                             {
                                 _cip[i] = new OmronConnectedCipNet(deviceInfoStruct_IEC[0].strIPAddress);  //  填写欧姆龙PLC的IP地址
                                 var retConnect = _cip[i].ConnectServer();
-                                
-                                Console.WriteLine("num {0} connect: {1})!", i, retConnect.IsSuccess ? "success" : "fail");
 
+                                //Console.WriteLine("num {0} connect: {1}!", i, retConnect.IsSuccess ? "success" : "fail");
+               
+                                if (retConnect.IsSuccess)
+                                {
+                                    logNet.WriteInfo("[CIP]","CIP连接成功" + i.ToString());
+                                }
+                                else
+                                {
+                                    logNet.WriteError("[CIP]","CIP连接失败" + i.ToString());
 
-                                //if (_cip[i] == null)
-                                //{
-                                //    _cip[i] = new OmronConnectedCipNet(deviceInfoStruct_IEC[0].strIPAddress);  //  填写欧姆龙PLC的IP地址
-                                //    var retConnect = _cip[i].ConnectServer();
-                                //    logNet.WriteInfo("num " + i.ToString() + retIn.IsSuccess? "success" : "fail");
-                                //    Console.WriteLine("num {0} connect: {1})!", i, retConnect.IsSuccess ? "success" : "fail");
-                                //}
-                                //else
-                                //{
-                                //    if (retConnect.ErrorCode == 0)
-                                //    {
-                                //        Console.WriteLine("Connect open");
-                                //    }
-                                //    else
-                                //    {
-                                //        _cip[i].ConnectClose();
-                                //        Console.WriteLine("Connect closed");
-                                //        retConnect = _cip[i].ConnectServer();
-                                //        logNet.WriteInfo("num " + i.ToString() + retIn.IsSuccess? "success" : "fail");
-                                //        Console.WriteLine("num {0} connect: {1})!", i, retConnect.IsSuccess ? "success" : "fail");
-                                //    }
-
-                                //}
-
+                                }
                             }
 
                             #endregion
@@ -465,7 +445,8 @@ namespace Ph_CipComm_FengZhuang
                                             }
                                             else
                                             {
-                                                Console.WriteLine(Vacuum_Alarm[0].varName + "Array Read Failed");
+                                                //Console.WriteLine(Vacuum_Alarm[0].varName + "Array Read Failed");
+                                                logNet.WriteError("[CIP]","报警数据读取失败");
                                             }
 
                                             //发送给IEC的
@@ -499,8 +480,8 @@ namespace Ph_CipComm_FengZhuang
                                             }
                                             catch (Exception e)
                                             {
-
-                                                Console.WriteLine("ERRO: {0}，{1}", e, nodeidDictionary.GetValueOrDefault("Alarm"));
+                                                logNet.WriteError("[Grpc]","Grpc发送报警数据失败: " + e);
+                                                //Console.WriteLine("ERRO: {0}，{1}", e, nodeidDictionary.GetValueOrDefault("Alarm"));
                                             }
                                             listWriteItem.Clear();
                                             #endregion 
@@ -509,14 +490,15 @@ namespace Ph_CipComm_FengZhuang
                                         else
                                         {
                                             //logNet.WriteInfo("No Warning");
-                                            Console.WriteLine("No Warning");
+                                            //Console.WriteLine("No Warning");
+                                            continue;
                                         }
 
                                     }
                                     else
                                     {
-                                        //logNet.WriteError("Y6[5] read failed");
-                                        Console.WriteLine("Y6[5] read failed");
+                                        logNet.WriteError("[CIP]","OEE红灯读取失败");
+                                        //Console.WriteLine("Y6[5] read failed");
                                     }
                                     #endregion
 
@@ -541,9 +523,7 @@ namespace Ph_CipComm_FengZhuang
                                     Array.Copy(Y6_temp, 0, OEEValue, OEEIndex, Y6_temp.Length);
                                     OEEIndex += Y6_temp.Length;
                                     Array.Copy(Manual_Andon_temp, 0, OEEValue, OEEIndex, Manual_Andon_temp.Length);
-
                                     
-
                                     try
                                     {
                                         listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["OEE"], Arp.Type.Grpc.CoreType.CtArray, OEEValue));
@@ -553,8 +533,8 @@ namespace Ph_CipComm_FengZhuang
                                     }
                                     catch (Exception e)
                                     {
-
-                                        Console.WriteLine("ERRO: {0}", e, nodeidDictionary.GetValueOrDefault("OEE"));
+                                        logNet.WriteError("[Grpc]", "OEE数据发送失败：" + e);
+                                        //Console.WriteLine("ERRO: {0}", e, nodeidDictionary.GetValueOrDefault("OEE"));
                                     }
 
                                     listWriteItem.Clear();
@@ -566,13 +546,16 @@ namespace Ph_CipComm_FengZhuang
                                     DateTime nowDisplay = DateTime.Now;
                                     TimeSpan dur = (end - start).Duration();
 
-                                    //logNet.WriteInfo("Thread ReadOnceSecInfo read time : " + (dur.TotalMilliseconds).ToString());
-                                    Console.WriteLine("Thread ReadOnceSecInfo read time:{0} read Duration:{1}", nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff"), dur.TotalMilliseconds);
-
-                                    if (dur.TotalMilliseconds < 100)
+                                    if (dur.TotalMilliseconds < 1000)
                                     {
                                         int sleepTime = 1000 - (int)dur.TotalMilliseconds;
                                         Thread.Sleep(sleepTime);
+                                    }
+                                    else
+                                    {
+                                        logNet.WriteInfo("Thread ReadOnceSecInfo read time : " + (dur.TotalMilliseconds).ToString());
+                                        //Console.WriteLine("Thread ReadOnceSecInfo read time:{0} read Duration:{1}", nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff"), dur.TotalMilliseconds);
+
                                     }
 
                                 }
@@ -600,7 +583,8 @@ namespace Ph_CipComm_FengZhuang
                                     }
                                     else
                                     {
-                                        Console.WriteLine(Vacuum_Alarm[0].varName + "Array Read Failed");
+                                        //Console.WriteLine(Vacuum_Alarm[0].varName + "Array Read Failed");
+                                        logNet.WriteError("[CIP]", Vacuum_Alarm[0].varName + "数据读取失败");
                                     }
 
                                     OperateResult<int> retIn = cip.ReadInt32("Auto_process[32]");
@@ -611,7 +595,7 @@ namespace Ph_CipComm_FengZhuang
                                     }
                                     else
                                     {
-                                        logNet.WriteError("Auto_process[32] read failed");
+                                        logNet.WriteError("[CIP]","Auto_process[32]数据读取失败");
                                         //Console.WriteLine("Auto_process[32] read failed");
                                     }
 
@@ -623,7 +607,7 @@ namespace Ph_CipComm_FengZhuang
                                     }
                                     else
                                     {
-                                        logNet.WriteInfo("Auto_process[18] read failed ");
+                                        logNet.WriteError("[CIP]", "Auto_process[18]数据读取失败");
                                         //Console.WriteLine("Auto_process[18] read failed");
                                     }
 
@@ -635,7 +619,7 @@ namespace Ph_CipComm_FengZhuang
                                     }
                                     else
                                     {
-                                        logNet.WriteInfo("Auto_process[9] read failed ");
+                                        logNet.WriteError("[CIP]", "Auto_process[9]数据读取失败");
                                         //Console.WriteLine("Auto_process[9] read failed");
                                     }
 
@@ -647,7 +631,7 @@ namespace Ph_CipComm_FengZhuang
                                     }
                                     else
                                     {
-                                        logNet.WriteInfo("Auto_process[43] read failed ");
+                                        logNet.WriteError("[CIP]", "Auto_process[43]数据读取失败");
                                         //Console.WriteLine("Auto_process[43] read failed");
                                     }
 
@@ -659,8 +643,8 @@ namespace Ph_CipComm_FengZhuang
                                     }
                                     else
                                     {
-                                        //logNet.WriteInfo("Auto_process[44] read failed ");
-                                        Console.WriteLine("Auto_process[44] read failed");
+                                        logNet.WriteError("[CIP]", "Auto_process[44]数据读取失败");
+                                        //Console.WriteLine("Auto_process[44] read failed");
                                     }
 
 
@@ -672,8 +656,8 @@ namespace Ph_CipComm_FengZhuang
                                     }
                                     else
                                     {
-                                        //logNet.WriteInfo("Auto_process[47] read failed ");
-                                        Console.WriteLine("Auto_process[47] read failed");
+                                        logNet.WriteError("[CIP]", "Auto_process[47]数据读取失败");
+                                        //Console.WriteLine("Auto_process[47] read failed");
                                     }
                                     #endregion
 
@@ -681,13 +665,17 @@ namespace Ph_CipComm_FengZhuang
                                     DateTime nowDisplay = DateTime.Now;
                                     TimeSpan dur = (start - end).Duration();
 
-                                    //logNet.WriteInfo("Thread ReadStationInfo1 read time : " + (dur.TotalMilliseconds).ToString());
-                                    Console.WriteLine("Thread ReadStationInfo1 read time:{0} read Duration:{1}", nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff"), dur.TotalMilliseconds);
-
+                                   
                                     if (dur.TotalMilliseconds < 100)
                                     {
                                         int sleepTime = 100 - (int)dur.TotalMilliseconds;
                                         Thread.Sleep(sleepTime);
+                                    }
+                                    else
+                                    {
+                                        logNet.WriteInfo("Thread ReadStationInfo1 read time : " + (dur.TotalMilliseconds).ToString());
+                                        //Console.WriteLine("Thread ReadStationInfo1 read time:{0} read Duration:{1}", nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff"), dur.TotalMilliseconds);
+
                                     }
 
                                 }
@@ -721,6 +709,7 @@ namespace Ph_CipComm_FengZhuang
 
                                 stringStruct[] sendStringtoIEC = new stringStruct[74];
 
+
                                 while (isThreadThreeRunning)
                                 {
                                     TimeSpan start = new TimeSpan(DateTime.Now.Ticks);
@@ -735,57 +724,51 @@ namespace Ph_CipComm_FengZhuang
                                         sbEarCode[i].Clear();
                                     }
 
-                                    omronClients.ReadDeviceInfoConSturct1(Auto_Process, _cip[2], sbAutoProcess);
-                                    omronClients.ReadDeviceInfoConSturct1(Clear_Manual, _cip[3], sbClearManual);
-                                    omronClients.ReadDeviceInfoConSturct1(Battery_Memory, _cip[4], sbBatteryMemory);
-                                    omronClients.ReadDeviceInfoConSturct1(BarCode, _cip[5], sbBarCode);
-                                    allDataReadfromCIP.BarCode = sbBarCode;
-                                    omronClients.ReadDeviceInfoConSturct1(EarCode, _cip[6], sbEarCode);
-                                    allDataReadfromCIP.EarCode = sbEarCode;
+                                    omronClients.ReadDeviceInfoConSturct1(Auto_Process, _cip[2], ref  allDataReadfromCIP, sbAutoProcess);
+                                    omronClients.ReadDeviceInfoConSturct1(Clear_Manual, _cip[3], ref allDataReadfromCIP, sbClearManual);
+                                    omronClients.ReadDeviceInfoConSturct1(Battery_Memory, _cip[4], ref allDataReadfromCIP, sbBatteryMemory);
+                                    omronClients.ReadDeviceInfoConSturct1(BarCode, _cip[5], ref allDataReadfromCIP, sbBarCode);                                     
+                                    omronClients.ReadDeviceInfoConSturct1(EarCode, _cip[6], ref allDataReadfromCIP, sbEarCode);
 
-
-
-
+ 
                                     //整合到74个string中 舍弃下标0 并行发送数据                         
                                     for (int i = 0; i < NumberOfStation; i++)
                                     {
                                         StringBuilder combinedString = new StringBuilder();   //每一行工位都是一个string
-
+                                       
                                         combinedString.Append(sbAutoProcess[i]);
+                                       
                                         if (sbBatteryMemory[i].Length == 0)
                                         {
-                                            combinedString.Append(sbBatteryMemory[i] + " ,");
-
+                                            combinedString.Append(sbBatteryMemory[i] + " ,");                                          
                                         }
                                         else
                                         {
-                                            combinedString.Append(sbBatteryMemory[i]);
+                                            combinedString.Append(sbBatteryMemory[i]);                                            
                                         }
 
                                         if (sbClearManual[i].Length == 0)
                                         {
-                                            combinedString.Append(sbClearManual[i] + " ,");
+                                            combinedString.Append(sbClearManual[i] + " ,");                                    
 
                                         }
                                         else
                                         {
-                                            combinedString.Append(sbClearManual[i]);
+                                            combinedString.Append(sbClearManual[i]);                                       
                                         }
 
                                         if (sbBarCode[i].Length == 0)
                                         {
                                             combinedString.Append(sbBarCode[i] + " ,");
-
                                         }
                                         else
                                         {
-                                            combinedString.Append(sbBarCode[i]);
+                                            combinedString.Append(sbBarCode[i]);                                        
                                         }
 
                                         if (sbEarCode[i].Length == 0)
                                         {
-                                            combinedString.Append(sbEarCode[i] + " ,");
-
+                                            combinedString.Append(sbEarCode[i] + " ,");                                        
                                         }
                                         else
                                         {
@@ -808,9 +791,11 @@ namespace Ph_CipComm_FengZhuang
                                             }
                                             catch (Exception e)
                                             {
-                                                Console.WriteLine("ERRO: {0}，{1}", e, nodeidDictionary.GetValueOrDefault(i.ToString()));
+                                                logNet.WriteError("[Grpc]", "设备信息数据发送失败：" + e);
+                                                //Console.WriteLine("ERRO: {0}，{1}", e, nodeidDictionary.GetValueOrDefault(i.ToString()));
                                             }
-                                            listWriteItem.Clear();
+                                            listWriteItem.Clear();                               
+
                                         }
                                         #endregion
                                     }
@@ -820,60 +805,24 @@ namespace Ph_CipComm_FengZhuang
                                     DateTime nowDisplay = DateTime.Now;
                                     TimeSpan dur = (start - end).Duration();
 
-                                    //logNet.WriteInfo("Thread ReadDeviceInfo read time : " + (dur.TotalMilliseconds).ToString());
-                                    Console.WriteLine("Thread ReadDeviceInfo read time:{0} read Duration:{1}", nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff"), dur.TotalMilliseconds);
+                                    
 
                                     if (dur.TotalMilliseconds < 100)
                                     {
                                         int sleepTime = 100 - (int)dur.TotalMilliseconds;
                                         Thread.Sleep(sleepTime);
                                     }
-
-                                }
-                            });
-
-                            //将读取的值写入Excel 
-                            thr[3] = new Thread(() =>
-                            {                                                               
-                                try
-                                {                                
-                                    var ExcelPath = "/opt/plcnext/apps/HGFZData.xlsx";
-                                    //var ExcelPath = Directory.GetCurrentDirectory() + "\\HGFZData.xlsx";                        
-                                    readExcel.setExcelCellValue(ExcelPath, "设备信息", "电芯条码地址采集值", allDataReadfromCIP.BarCode);
-                                    readExcel.setExcelCellValue(ExcelPath, "设备信息", "极耳码地址采集值", allDataReadfromCIP.EarCode);
-                                    readExcel.setExcelCellValue(ExcelPath, "加工工位（冲膜）", "采集值", allDataReadfromCIP.ChongMoValue);
-                                    readExcel.setExcelCellValue(ExcelPath, "加工工位（热压）", "采集值", allDataReadfromCIP.ReYaValue);
-                                    readExcel.setExcelCellValue(ExcelPath, "加工工位（顶封）", "采集值", allDataReadfromCIP.DingFengValue);
-                                    readExcel.setExcelCellValue(ExcelPath, "加工工位（左角封）", "采集值", allDataReadfromCIP.ZuoJiaoFengValue);
-                                    readExcel.setExcelCellValue(ExcelPath, "加工工位（右角封）", "采集值", allDataReadfromCIP.YouJiaoFengValue);
-                                    readExcel.setExcelCellValue(ExcelPath, "加工工位（侧封）", "采集值", allDataReadfromCIP.CeFengValue);
-                                    readExcel.setExcelCellValue(ExcelPath, "生产统计", "采集值", allDataReadfromCIP.ProductionDataValue);
-                                    readExcel.setExcelCellValue(ExcelPath, "寿命管理", "采集值", allDataReadfromCIP.LifeManagementValue);
-                                    readExcel.setExcelCellValue(ExcelPath, "OEE", "采集值", allDataReadfromCIP.OEEInfo1Value);
-                                    readExcel.setExcelCellValue(ExcelPath, "OEE(2)", "采集值", allDataReadfromCIP.OEEInfo2Value);
-
-                                    var tempFlag_finishWriteExcelFile = true;
-
-                                    listWriteItem.Clear();
-                                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["flag_finishWriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, tempFlag_finishWriteExcelFile));
-                                    if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
-                                    {
-                                        Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: success", DateTime.Now);
-                                    }
                                     else
                                     {
-                                        Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: fail", DateTime.Now);
+                                        logNet.WriteInfo("Thread ReadDeviceInfo read time : " + (dur.TotalMilliseconds).ToString());
+                                        //Console.WriteLine("Thread ReadDeviceInfo read time:{0} read Duration:{1}", nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff"), dur.TotalMilliseconds);
+
                                     }
 
                                 }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine("Write data to Excel failed : {0} ", e);
-                                }                                                                    
-                                
                             });
 
-                            #endregion
+                           
                             stepNumber = 100;
 
                         }
@@ -883,12 +832,13 @@ namespace Ph_CipComm_FengZhuang
 
                     case 100:
                         {
-                            //开启线程
+
+                            #region 开启三大数采线程
                             if (thr[0].ThreadState == ThreadState.Unstarted && thr[1].ThreadState == ThreadState.Unstarted && thr[2].ThreadState == ThreadState.Unstarted)
                             {
                                 try
                                 {
-                                    #region 开启三大数采线程
+                                    
 
                                     isThreadOneRunning = true;
                                     thr[0].Start();  // 读1000ms数据
@@ -898,21 +848,21 @@ namespace Ph_CipComm_FengZhuang
 
                                     isThreadThreeRunning = true;
                                     thr[2].Start();  //读设备信息
+   
                                     
-
-                                    //thr[3].Start();  //读设备信息
-                                    #endregion
 
                                     //APP Status ： running
                                     listWriteItem.Clear();
                                     listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, 1));
                                     if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                                     {
-                                        Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                        logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                        //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
                                     }
                                     else
                                     {
-                                        Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
+                                        //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
+                                        logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
                                     }
 
                                 }
@@ -925,11 +875,13 @@ namespace Ph_CipComm_FengZhuang
                                     listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -1));
                                     if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                                     {
-                                        Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                        logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                        //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
                                     }
                                     else
                                     {
-                                        Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
+                                        //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
+                                        logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
                                     }
 
                                     stepNumber = 1000;
@@ -937,6 +889,7 @@ namespace Ph_CipComm_FengZhuang
 
                                 }
                             }
+                            #endregion
 
 
                             #region IEC发送触发信号，重新读取Excel
@@ -950,13 +903,13 @@ namespace Ph_CipComm_FengZhuang
                                 listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["Switch_ReadExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, false)); //Write Data to DataAccessService                                 
                                 if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                                 {
-                                    Console.WriteLine("{0}      Switch_ReadExcelFile写入IEC: success", DateTime.Now);
-                                    logNet.WriteInfo(DateTime.Now.ToString() + "Switch_ReadExcelFile写入IEC: success");
+                                    //Console.WriteLine("{0}      Switch_ReadExcelFile写入IEC: success", DateTime.Now);
+                                    logNet.WriteInfo("[Grpc]", "Switch_ReadExcelFile 写入IEC成功");
                                 }
                                 else
                                 {
-                                    Console.WriteLine("{0}      Switch_ReadExcelFile写入IEC: fail", DateTime.Now);
-                                    logNet.WriteError(DateTime.Now.ToString() + "Switch_ReadExcelFile写入IEC: fail");
+                                    //Console.WriteLine("{0}      Switch_ReadExcelFile写入IEC: fail", DateTime.Now);
+                                    logNet.WriteError("[Grpc]", "Switch_ReadExcelFile 写入IEC失败");
                                 }
 
 
@@ -968,7 +921,8 @@ namespace Ph_CipComm_FengZhuang
                                 for (int i = 0; i < clientNum; i++)
                                 {
                                     _cip[i].ConnectClose();
-                                    Console.WriteLine(" CIP {0} Connect closed", i);
+                                    //Console.WriteLine(" CIP {0} Connect closed", i);
+                                    logNet.WriteInfo("[CIP]", "CIP连接断开" + i.ToString());
                                 }
 
                                 Thread.Sleep(1000);//等待线程退出
@@ -978,6 +932,7 @@ namespace Ph_CipComm_FengZhuang
 
                             #endregion
 
+
                             #region 检测PLCnext和Omron PLC之间的连接
                             IPStatus iPStatus;
                             iPStatus = _cip[0].IpAddressPing();  //判断与PLC的物理连接状态
@@ -985,7 +940,7 @@ namespace Ph_CipComm_FengZhuang
                             if (iPStatus != 0)
                             {
                                 //Console.WriteLine("Ping Omron PLC failed");
-                                logNet.WriteError("Ping Omron PLC failed");
+                                logNet.WriteError("[CIP]", "Ping Omron PLC failed");
 
                             };
                             #endregion
@@ -1002,25 +957,183 @@ namespace Ph_CipComm_FengZhuang
                                 listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["Switch_WriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, false)); //Write Data to DataAccessService                                 
                                 if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                                 {
-                                    Console.WriteLine("{0}      Switch_WriteExcelFile: success", DateTime.Now);
-                                    logNet.WriteInfo(DateTime.Now.ToString() + "Switch_WriteExcelFile: success");
+                                    //Console.WriteLine("{0}      Switch_WriteExcelFile: success", DateTime.Now);
+                                    logNet.WriteInfo("[Grpc]", "Switch_WriteExcelFile 写入IEC成功");
                                 }
                                 else
                                 {
-                                    Console.WriteLine("{0}      Switch_WriteExcelFile: fail", DateTime.Now);
-                                    logNet.WriteError(DateTime.Now.ToString() + "Switch_WriteExcelFile: fail");
+                                    //Console.WriteLine("{0}      Switch_WriteExcelFile: fail", DateTime.Now);
+                                    logNet.WriteError("[Grpc]", "Switch_WriteExcelFile 写入IEC失败");
                                 }
 
-                                try
+                                //将读取的值写入Excel 
+                                thr[3] = new Thread(() =>
                                 {
-                                    logNet.WriteInfo("-----" + thr[3].ThreadState.ToString());
+                                    var ExcelPath = "/opt/plcnext/apps/HGFZData.xlsx";
+                                    //var ExcelPath = Directory.GetCurrentDirectory() + "\\HGFZData.xlsx";
+                                    
+                                    var allDataReadfromCIP_temp = allDataReadfromCIP;  //将数据缓存区的值赋给临时变量
 
+                                    #region 将数据缓存区的值写入Excel
+
+                                    try
+                                    {                                      
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "设备信息", "电芯条码地址采集值", allDataReadfromCIP_temp.BarCode);
+                                        logNet.WriteInfo("WriteData","电芯条码地址采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        logNet.WriteError("WriteData", "电芯条码地址采集值写入Excel失败原因: " + e);                                      
+                                    }
+
+                                    try
+                                    {
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（冲膜）", "采集值", allDataReadfromCIP_temp.ChongMoValue);
+                                        logNet.WriteInfo("WriteData", "加工工位（冲膜）采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        logNet.WriteError("WriteData", "电芯条码地址采集值写入Excel失败原因: " + e);
+                                        //Console.WriteLine("加工工位（冲膜）采集值写入Excel失败原因: {0} ", e);
+                                        
+                                    }
+
+                                    try
+                                    {      
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "设备信息", "极耳码地址采集值", allDataReadfromCIP_temp.EarCode);
+                                        logNet.WriteInfo("WriteData", "极耳码地址采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        // Console.WriteLine("极耳码地址采集值写入Excel失败原因: {0} ", e);
+                                        logNet.WriteError("WriteData", "极耳码地址采集值写入Excel失败原因: " + e);
+                                    }
+
+                                    try
+                                    {
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（热压）", "采集值", allDataReadfromCIP_temp.ReYaValue);
+                                        logNet.WriteInfo("加工工位（热压）采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        //Console.WriteLine("加工工位（热压）采集值写入Excel失败原因: {0} ", e);
+                                        logNet.WriteError("WriteData", "加工工位（热压）采集值写入Excel失败原因: " + e);
+                                    }
+
+                                    try
+                                    {
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（顶封）", "采集值", allDataReadfromCIP_temp.DingFengValue);
+                                        logNet.WriteInfo("加工工位（顶封）采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        //Console.WriteLine("加工工位（顶封）采集值写入Excel失败原因: {0} ", e);
+                                        logNet.WriteError("WriteData", "加工工位（顶封）采集值写入Excel失败原因: " + e);
+                                    }
+
+                                    try
+                                    {
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（左角封）", "采集值", allDataReadfromCIP_temp.ZuoJiaoFengValue);
+                                        logNet.WriteInfo("加工工位（左角封）采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        //Console.WriteLine("加工工位（左角封）采集值写入Excel失败原因: {0} ", e);
+                                        logNet.WriteError("WriteData", "加工工位（左角封）采集值写入Excel失败原因: " + e);
+                                    }
+
+                                    try
+                                    {
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（右角封）", "采集值", allDataReadfromCIP_temp.YouJiaoFengValue);
+                                        logNet.WriteInfo("加工工位（右角封）采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        //Console.WriteLine("加工工位（右角封）采集值写入Excel失败原因: {0} ", e);
+                                        logNet.WriteError("WriteData", "加工工位（右角封）采集值写入Excel失败原因: " + e);
+                                    }
+
+                                    try
+                                    {
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（侧封）", "采集值", allDataReadfromCIP_temp.CeFengValue);
+                                        logNet.WriteInfo("加工工位（侧封）采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        //Console.WriteLine("加工工位（侧封）采集值写入Excel失败原因: {0} ", e);
+                                        logNet.WriteError("WriteData", "加工工位（侧封）采集值写入Excel失败原因: " + e);
+                                    }
+
+                                    try
+                                    {
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "生产统计", "采集值", allDataReadfromCIP_temp.ProductionDataValue);
+                                        logNet.WriteInfo("生产统计采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        //Console.WriteLine("生产统计采集值写入Excel失败原因: {0} ", e);
+                                        logNet.WriteError("WriteData", "生产统计采集值写入Excel失败原因: " + e);
+                                    }
+
+                                    try
+                                    {
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "寿命管理", "采集值", allDataReadfromCIP_temp.LifeManagementValue);
+                                        logNet.WriteInfo("寿命管理采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        //Console.WriteLine("寿命管理采集值写入Excel失败原因: {0} ", e);
+                                        logNet.WriteError("WriteData", "寿命管理采集值写入Excel失败原因: " + e);
+                                    }
+
+                                    try
+                                    {
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "OEE", "采集值", allDataReadfromCIP_temp.OEEInfo1Value);
+                                        logNet.WriteInfo("OEE采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                       //Console.WriteLine("OEE采集值写入Excel失败原因: {0} ", e);
+                                        logNet.WriteError("WriteData", "OEE采集值写入Excel失败原因: " + e);
+                                    }
+
+                                    try
+                                    {
+                                        var result = readExcel.setExcelCellValue(ExcelPath, "OEE(2)", "采集值", allDataReadfromCIP_temp.OEEInfo2Value);
+                                        logNet.WriteInfo("OEE(2)采集值写入Excel: " + (result ? "成功" : "失败"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        //Console.WriteLine("OEE(2)采集值写入Excel失败原因: {0} ", e);
+                                        logNet.WriteError("WriteData", "OEE(2)采集值写入Excel失败原因: " + e);
+                                    }
+                                    #endregion
+
+                                    //给IEC写入 采集值写入成功的信号
+                                    var tempFlag_finishWriteExcelFile = true;
+
+                                    listWriteItem.Clear();
+                                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["flag_finishWriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, tempFlag_finishWriteExcelFile));
+                                    if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
+                                    {
+                                        //Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: success", DateTime.Now);
+                                        logNet.WriteInfo("[Grpc]", "flag_finishWriteExcelFile 写入IEC成功");
+                                    }
+                                    else
+                                    {
+                                        //Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: fail", DateTime.Now);
+                                        logNet.WriteError("[Grpc]", "flag_finishWriteExcelFile 写入IEC失败");
+                                    }
+
+                                    IecTriggersNumber = 0;  //为了防止IEC连续两次赋值true
+
+                                });
+
+                                IecTriggersNumber++;
+
+                                if (IecTriggersNumber == 1)
+                                {
                                     thr[3].Start();
-
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine("Write data to Excel failed : {0} ", e);
                                 }
 
                             }
@@ -1056,4 +1169,5 @@ namespace Ph_CipComm_FengZhuang
 
 
     }
+    #endregion
 }

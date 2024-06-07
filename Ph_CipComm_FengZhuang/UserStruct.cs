@@ -455,8 +455,11 @@ namespace Ph_CipComm_FengZhuang
             public int[] LifeManagementValue;
             public bool[] OEEInfo1Value;
             public bool[] OEEInfo2Value;
-            public StringBuilder[] BarCode;
+            public StringBuilder[] BarCode;  
             public StringBuilder[] EarCode;
+            //public string[] BarCode;  
+            //public string[] EarCode;
+
 
             public AllDataReadfromCIP ()
             {
@@ -472,6 +475,8 @@ namespace Ph_CipComm_FengZhuang
                 OEEInfo2Value = new bool[12];
                 BarCode = new StringBuilder[74];
                 EarCode = new StringBuilder[74];
+                //BarCode = new string[74];
+                //EarCode = new string[74];
             }
         }
 

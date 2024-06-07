@@ -34,50 +34,8 @@ namespace Ph_CipComm_FengZhuang
     class OmronComm
     {
 
-        //#region Function 读取六个工位的数据
-        //public void ReadandSendStation(StationInfoStruct_CIP[] input, OmronConnectedCipNet cip , GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
-        //{
-        //    //var tempstring = "";  //暂存取到的string数据
-        //    //int count = 0; //计数器
-        //    ushort length = (ushort)input.Length;
-        //    string StationName_Now = CN2EN(input[0].stationName); //将当前结构体数组的工位名读取出来，后续在xml文件中对应,中文转拼音（英文）
-        //    var listWriteItem = new List<WriteItem>();
-        //    //WriteItem[] writeItems = new WriteItem[] { };
-
-        //    listWriteItem.Clear();  //每次发送工位数据前都清空list
-
-        //    OperateResult<float[]> ret = cip.ReadFloat(input[0].varName, length);
-        //    if (ret.IsSuccess)
-        //    {
-        //        //writeItems = null;
-        //        try
-        //        {
-        //            listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(StationName_Now), Arp.Type.Grpc.CoreType.CtArray, ret.Content)); //todo:待优化floatArr改为Content
-        //            var writeItemsArray = listWriteItem.ToArray();
-        //            var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-        //            bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            Console.WriteLine("ERRO: {0}", e);
-        //        }
-
-        //        //SendDataToIEC(listWriteItem);
-                
-        //    }
-        //    else
-        //    {
-        //        //logNet.WriteInfo(input[0].varName + "read failed");
-        //        Console.WriteLine(input[0].varName + "read array failed");
-
-        //    }
-
-        //}
-        //#endregion  Function 读取六个工位的数据
-
-
         #region Function 读取设备信息（以数组形式一起读上来，再按照序号写入对应的工位里）
-        public void ReadDeviceInfoConSturct1(DeviceInfoConSturct1_CIP[] input, OmronConnectedCipNet cip, StringBuilder[] Output)
+        public void ReadDeviceInfoConSturct1(DeviceInfoConSturct1_CIP[] input, OmronConnectedCipNet cip, ref AllDataReadfromCIP allDataReadfromCIP,StringBuilder[] Output) //StringBuilder[] Output
         {
             string ReadObject = input[0].varName;   //！这里约定变量名就叫Auto_process 索引单独是一个变量！
             ushort Auto_Process_Length = 86;  // 数组长度为硬编码，由Excel读出，不知后续需要是否需要更改
@@ -91,14 +49,15 @@ namespace Ph_CipComm_FengZhuang
                 if (ret.IsSuccess)
                 {
                     for (int i = 0; i < input.Length; i++)
-                    {               
+                    {
                         Output[input[i].stationNumber -1 ].Append(ret.Content[input[i].varIndex].ToString() + ",");
+                       
                     }
                 }
                 else
                 {
-                    //logNet.WriteInfo(ReadObject + "read failed");
-                    Console.WriteLine(ReadObject + "read failed");
+                    logNet.WriteError("[CIP]",ReadObject + "读取失败");
+                    //Console.WriteLine(ReadObject + "read failed");
 
                 }
             }
@@ -116,7 +75,7 @@ namespace Ph_CipComm_FengZhuang
                 }
                 else
                 {
-                    logNet.WriteInfo(ReadObject + "read failed");
+                    logNet.WriteError("[CIP]", ReadObject + "读取失败");
                     //Console.WriteLine(ReadObject + "read failed");
                 }
                   
@@ -131,12 +90,23 @@ namespace Ph_CipComm_FengZhuang
                     {
                         var tempstring = string.Join("", Output, 0 + 50 * i, 49 + 50 * i);
                         float[] output_temp = new float[50];
-                        Output[input[i].stationNumber -1 ] = tool.ConvertFloatArrayToAscii(ret.Content, 0 + 50 * i, 49 + 50 * i);                        
+                        Output[input[i].stationNumber -1 ] = tool.ConvertFloatArrayToAscii(ret.Content, 0 + 50 * i, 49 + 50 * i);
+
+                        if (ReadObject == "Station_BarCode")
+                        {
+                            allDataReadfromCIP.BarCode[input[i].stationNumber - 1] = tool.ConvertFloatArrayToAscii(ret.Content, 0 + 50 * i, 49 + 50 * i);
+                        }
+                        else
+                        {
+                            allDataReadfromCIP.EarCode[input[i].stationNumber - 1] = tool.ConvertFloatArrayToAscii(ret.Content, 0 + 50 * i, 49 + 50 * i);
+
+                        }
+                      
                     }
                 }
                 else
                 {
-                    logNet.WriteInfo(ReadObject + "read failed");
+                    logNet.WriteError("[CIP]", ReadObject + "读取失败");
                     //Console.WriteLine(ReadObject + "read failed");
 
                 }
@@ -161,7 +131,7 @@ namespace Ph_CipComm_FengZhuang
                 }
                 else
                 {
-                    logNet.WriteInfo(input[0].varName + "read failed");
+                    logNet.WriteError("[CIP]", input[0].varName + "读取失败");
                    // Console.WriteLine(input[0].varName + "read failed");
                 }
             }
@@ -176,7 +146,7 @@ namespace Ph_CipComm_FengZhuang
                     }
                     else
                     {
-                        logNet.WriteInfo(input[0].varName + "read failed");
+                        logNet.WriteError("[CIP]", input[0].varName + "读取失败");
                         //Console.WriteLine(input[i].varName + "read failed");
                     }
                     
@@ -210,7 +180,8 @@ namespace Ph_CipComm_FengZhuang
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("ERRO: {0}", e);
+                            logNet.WriteError("[Grpc]", input[0].varName+ " 数据发送失败：" + e);
+                            //Console.WriteLine("ERRO: {0}", e);
                         }
                     }
                     else
@@ -224,14 +195,15 @@ namespace Ph_CipComm_FengZhuang
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("ERRO: {0}", e);
+                            logNet.WriteError("[Grpc]", input[0].varName + " 数据发送失败：" + e);
+                            //Console.WriteLine("ERRO: {0}", e);
                         }
                     }
                 }
                 else
                 {
-                    //logNet.WriteInfo(input[0].varName + "read failed");
-                    Console.WriteLine(input[0].varName + "read failed");
+                    logNet.WriteError("[CIP]", input[0].varName + "读取失败");
+                    //Console.WriteLine(input[0].varName + "read failed");
                 }
             }
 
@@ -254,7 +226,8 @@ namespace Ph_CipComm_FengZhuang
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("ERRO: {0}", e);
+                            logNet.WriteError("[Grpc]", input[0].varName + " 数据发送失败：" + e);
+                            //Console.WriteLine("ERRO: {0}", e);
                         }
 
                     }
@@ -269,7 +242,8 @@ namespace Ph_CipComm_FengZhuang
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("ERRO: {0}", e);
+                            logNet.WriteError("[Grpc]", input[0].varName + " 数据发送失败：" + e);
+                            //Console.WriteLine("ERRO: {0}", e);
                         }
 
                     }
@@ -285,7 +259,7 @@ namespace Ph_CipComm_FengZhuang
                 }
                 else
                 {
-                    logNet.WriteInfo(input[0].varName + "read failed");
+                    logNet.WriteError("[CIP]", input[0].varName + "读取失败");
                     //Console.WriteLine(input[0].varName + "read failed");
                 }
             }
@@ -323,7 +297,8 @@ namespace Ph_CipComm_FengZhuang
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERRO: {0}", e);
+                logNet.WriteError("[Grpc]", StationName_Now + " 数据发送失败：" + e);
+                //Console.WriteLine("ERRO: {0}", e);
             }         
           
         }
@@ -433,7 +408,7 @@ namespace Ph_CipComm_FengZhuang
             }
             catch (Exception e)
             {
-                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + InputStruct[0].varAnnotation + "ERRO: {0}", e.ToString());
+                logNet.WriteError("[Grpc]", InputStruct[0].varAnnotation + " 点位名发送失败：" + e);              
                 //Console.WriteLine("ERRO: {0}", e);
             }
 
@@ -465,7 +440,7 @@ namespace Ph_CipComm_FengZhuang
             }
             catch (Exception e)
             {
-                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + InputString[0] + "ERRO: {0}", e.ToString());
+                logNet.WriteError("[Grpc]", InputString[0] + " 点位名发送失败：" + e);
                 //Console.WriteLine("ERRO: {0}", e);
             }
 
@@ -496,7 +471,7 @@ namespace Ph_CipComm_FengZhuang
             }
             catch (Exception e)
             {
-                logNet.WriteError(nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff") + InputStruct[0].varAnnotation + "ERRO: {0}", e.ToString());
+                logNet.WriteError("[Grpc]", InputStruct[0].varAnnotation + " 点位名发送失败：" + e);
                 //Console.WriteLine("ERRO: {0}", e);
             }
           

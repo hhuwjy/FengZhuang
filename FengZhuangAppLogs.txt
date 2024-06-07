@@ -1,0 +1,49 @@
+﻿[Info] 2024-06-07 09:05:32.205 Thread:[001] 2024-06-07 09:05:31:792  :NodeID read successfully
+[Info] 2024-06-07 09:05:32.396 Thread:[001] 2024-06-07 09:05:31:792 :App Start
+[Info] 2024-06-07 09:05:33.071 Thread:[001] 2024-06-07 09:05:31:792  :ExcelWorkbook read success
+[Info] 2024-06-07 09:05:42.731 Thread:[015] -----Running
+[Info] 2024-06-07 09:05:44.152 Thread:[015] --------Get into thread3-------
+[Info] 2024-06-07 09:06:27.009 Thread:[001] 2024-06-07 09:06:26:730  :NodeID read successfully
+[Info] 2024-06-07 09:06:27.122 Thread:[001] 2024-06-07 09:06:26:730 :App Start
+[Info] 2024-06-07 09:06:28.051 Thread:[001] 2024-06-07 09:06:26:730  :ExcelWorkbook read success
+[Info] 2024-06-07 09:06:31.690 Thread:[015] -----Running
+[Info] 2024-06-07 09:06:32.843 Thread:[015] --------Get into thread3-------
+[Info] 2024-06-07 09:07:06.696 Thread:[001] 2024-06-07 09:07:06:402  :NodeID read successfully
+[Info] 2024-06-07 09:07:06.806 Thread:[001] 2024-06-07 09:07:06:402 :App Start
+[Info] 2024-06-07 09:07:21.716 Thread:[001] 2024-06-07 09:07:21:402  :NodeID read successfully
+[Info] 2024-06-07 09:07:21.839 Thread:[001] 2024-06-07 09:07:21:402 :App Start
+[Info] 2024-06-07 09:07:54.480 Thread:[001] 2024-06-07 09:07:54:184  :NodeID read successfully
+[Info] 2024-06-07 09:07:54.607 Thread:[001] 2024-06-07 09:07:54:184 :App Start
+[Info] 2024-06-07 09:07:55.357 Thread:[001] 2024-06-07 09:07:54:184  :ExcelWorkbook read success
+[Info] 2024-06-07 09:07:57.751 Thread:[015] -----Running
+[Info] 2024-06-07 09:07:57.751 Thread:[015] --------Get into thread3-------
+[Info] 2024-06-07 09:09:06.023 Thread:[001] 2024-06-07 09:09:05:755  :NodeID read successfully
+[Info] 2024-06-07 09:09:06.135 Thread:[001] 2024-06-07 09:09:05:755 :App Start
+[Info] 2024-06-07 09:09:06.846 Thread:[001] 2024-06-07 09:09:05:755  :ExcelWorkbook read success
+[Info] 2024-06-07 09:09:09.244 Thread:[016] -----Running
+[Info] 2024-06-07 09:09:09.244 Thread:[016] --------Get into thread3-------
+[Info] 2024-06-07 09:11:45.758 Thread:[001] 2024-06-07 09:11:45:484  :NodeID read successfully
+[Info] 2024-06-07 09:11:45.868 Thread:[001] 2024-06-07 09:11:45:484 :App Start
+[Info] 2024-06-07 09:11:46.637 Thread:[001] 2024-06-07 09:11:45:484  :ExcelWorkbook read success
+[Info] 2024-06-07 09:11:48.980 Thread:[015] -----Running
+[Info] 2024-06-07 09:11:48.980 Thread:[015] --------Get into thread3-------
+[Info] 2024-06-07 09:12:24.881 Thread:[001] 2024-06-07 09:12:24:544  :NodeID read successfully
+[Info] 2024-06-07 09:12:25.032 Thread:[001] 2024-06-07 09:12:24:544 :App Start
+[Info] 2024-06-07 09:12:26.003 Thread:[001] 2024-06-07 09:12:24:544  :ExcelWorkbook read success
+[Info] 2024-06-07 09:12:28.390 Thread:[015] -----Running
+[Info] 2024-06-07 09:12:28.390 Thread:[015] --------Get into thread3-------
+[Info] 2024-06-07 09:13:35.102 Thread:[001] 2024-06-07 09:13:34:817  :NodeID read successfully
+[Info] 2024-06-07 09:13:35.213 Thread:[001] 2024-06-07 09:13:34:817 :App Start
+[Info] 2024-06-07 09:13:35.950 Thread:[001] 2024-06-07 09:13:34:817  :ExcelWorkbook read success
+[Info] 2024-06-07 09:13:38.262 Thread:[016] -----Running
+[Info] 2024-06-07 09:13:38.262 Thread:[016] --------Get into thread3-------
+[Info] 2024-06-07 09:15:42.838 Thread:[001] 2024-06-07 09:15:42:594  :NodeID read successfully
+[Info] 2024-06-07 09:15:42.939 Thread:[001] 2024-06-07 09:15:42:594 :App Start
+[Info] 2024-06-07 09:15:43.772 Thread:[001] 2024-06-07 09:15:42:594  :ExcelWorkbook read success
+[Info] 2024-06-07 09:15:46.200 Thread:[015] -----Running
+[Info] 2024-06-07 09:15:46.200 Thread:[015] --------Get into thread3-------
+[Info] 2024-06-07 09:16:26.135 Thread:[001] 2024-06-07 09:16:25:833  :NodeID read successfully
+[Info] 2024-06-07 09:16:26.252 Thread:[001] 2024-06-07 09:16:25:833 :App Start
+[Info] 2024-06-07 09:16:26.918 Thread:[001] 2024-06-07 09:16:25:833  :ExcelWorkbook read success
+[Info] 2024-06-07 09:16:29.202 Thread:[015] -----Running
+[Info] 2024-06-07 09:16:29.202 Thread:[015] --------Get into thread3-------

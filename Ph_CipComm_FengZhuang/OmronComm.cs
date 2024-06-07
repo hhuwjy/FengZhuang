@@ -92,7 +92,7 @@ namespace Ph_CipComm_FengZhuang
                 {
                     for (int i = 0; i < input.Length; i++)
                     {               
-                        Output[input[i].stationNumber].Append(ret.Content[input[i].varIndex].ToString() + ",");
+                        Output[input[i].stationNumber -1 ].Append(ret.Content[input[i].varIndex].ToString() + ",");
                     }
                 }
                 else
@@ -111,7 +111,7 @@ namespace Ph_CipComm_FengZhuang
                 {
                     for (int i = 0; i < input.Length; i++)
                     {
-                        Output[input[i].stationNumber].Append(ret.Content[input[i].varIndex] ? "1," : "0,");
+                        Output[input[i].stationNumber -1 ].Append(ret.Content[input[i].varIndex] ? "1," : "0,");
                     }
                 }
                 else
@@ -131,7 +131,7 @@ namespace Ph_CipComm_FengZhuang
                     {
                         var tempstring = string.Join("", Output, 0 + 50 * i, 49 + 50 * i);
                         float[] output_temp = new float[50];
-                        Output[input[i].stationNumber] = tool.ConvertFloatArrayToAscii(ret.Content, 0 + 50 * i, 49 + 50 * i);                        
+                        Output[input[i].stationNumber -1 ] = tool.ConvertFloatArrayToAscii(ret.Content, 0 + 50 * i, 49 + 50 * i);                        
                     }
                 }
                 else
@@ -186,7 +186,7 @@ namespace Ph_CipComm_FengZhuang
             return AlarmValue;
 
         }
-        public void ReadandSendOneSecData(OneSecInfoStruct_CIP[] input, OmronConnectedCipNet cip, int IECNumber,GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        public void ReadandSendOneSecData(OneSecInfoStruct_CIP[] input, OmronConnectedCipNet cip, ref AllDataReadfromCIP allDataReadfromCIP, int IECNumber,GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
         {
             var listWriteItem = new List<WriteItem>();
             //WriteItem[] writeItems = new WriteItem[] { };
@@ -227,7 +227,6 @@ namespace Ph_CipComm_FengZhuang
                             Console.WriteLine("ERRO: {0}", e);
                         }
                     }
-
                 }
                 else
                 {
@@ -274,6 +273,15 @@ namespace Ph_CipComm_FengZhuang
                         }
 
                     }
+
+                    if (input[0].varName == "Production_statistics[0]")
+                    {
+                        Array.Copy(senddata, allDataReadfromCIP.ProductionDataValue, senddata.Length);
+                    }
+                    else
+                    {
+                        Array.Copy(ret.Content, allDataReadfromCIP.LifeManagementValue, ret.Content.Length);
+                    }                  
                 }
                 else
                 {
@@ -288,8 +296,8 @@ namespace Ph_CipComm_FengZhuang
 
 
 
-        //通过数组的起终索引，来发送子数组
-        public void SendSubArray(StationInfoStruct_CIP[] input, float[] sourceArray, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient , CallOptions options1)
+        //通过数组的起终索引，来发送子数组 （六大工位）
+        public void SendSubArray(StationInfoStruct_CIP[] input, ref AllDataReadfromCIP allDataReadfromCIP, float[] sourceArray, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient , CallOptions options1)
         {
             float[] ToSendArray = new float[input.Length]; //将var修改成了ToSendArray
             var startIndex = input[0].varIndex;
@@ -302,6 +310,8 @@ namespace Ph_CipComm_FengZhuang
 
             //Console.WriteLine(" {0}[0] value = {1}", StationName_Now, ToSendArray[0].ToString());
 
+            CopyStationData(ref allDataReadfromCIP, ToSendArray, input[0].stationName);  //将数据写到暂存区
+
             try
             {
                 listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary[StationName_Now], Arp.Type.Grpc.CoreType.CtArray, ToSendArray));
@@ -309,10 +319,8 @@ namespace Ph_CipComm_FengZhuang
                 var writeItemsArray = listWriteItem.ToArray();
                 var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
                 bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-                //Console.WriteLine("WriteDataToDataAccessService ({0}) : {1}", nodeidDictionary[StationName_Now], result);
-                 
+                //Console.WriteLine("WriteDataToDataAccessService ({0}) : {1}", nodeidDictionary[StationName_Now], result);               
             }
-
             catch (Exception e)
             {
                 Console.WriteLine("ERRO: {0}", e);
@@ -357,8 +365,45 @@ namespace Ph_CipComm_FengZhuang
             }
 
             return NameEN;
+        }
+
+        public void CopyStationData(ref AllDataReadfromCIP allDataReadfromCIP, float[] SourceData, string NameCN)
+        {
+            switch (NameCN)
+            {
+                case "加工工位（冲膜）":
+                    Array.Copy(SourceData, allDataReadfromCIP.ChongMoValue, SourceData.Length);  //写到数据暂存区
+                    break;
+
+                case "加工工位（热压）":
+                    Array.Copy(SourceData, allDataReadfromCIP.ReYaValue, SourceData.Length);  //写到数据暂存区
+                    break;
+
+                case "加工工位（顶封）":
+                    Array.Copy(SourceData, allDataReadfromCIP.DingFengValue, SourceData.Length);  //写到数据暂存区
+                    break;
+
+                case "加工工位（右角封）":
+                    Array.Copy(SourceData, allDataReadfromCIP.YouJiaoFengValue, SourceData.Length);  //写到数据暂存区
+                    break;
+
+                case "加工工位（左角封）":
+                    Array.Copy(SourceData, allDataReadfromCIP.ZuoJiaoFengValue, SourceData.Length);  //写到数据暂存区
+                    break;
+
+                case "加工工位（侧封）":
+                    Array.Copy(SourceData, allDataReadfromCIP.CeFengValue, SourceData.Length);  //写到数据暂存区
+                    break;
+
+                default:
+                    break;
+
+            }
+
+
 
         }
+
 
         //读取和发送点位名(三个函数重载)
         public void ReadandSendPointName(OneSecInfoStruct_CIP[] InputStruct, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
@@ -371,11 +416,11 @@ namespace Ph_CipComm_FengZhuang
             {
                 if (i < InputStruct.Length)
                 {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = InputStruct[i].varAnnotation;
+                    functionEnableNameStruct_IEC.stringArrData[i].StringValue = InputStruct[i].varAnnotation;
                 }
                 else
                 {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = " ";
+                    functionEnableNameStruct_IEC.stringArrData[i].StringValue = " ";
                 }
             }
             try
@@ -403,11 +448,11 @@ namespace Ph_CipComm_FengZhuang
             {
                 if (i < InputString.Length)
                 {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = InputString[i];
+                    functionEnableNameStruct_IEC.stringArrData[i].StringValue = InputString[i];
                 }
                 else
                 {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = " ";
+                    functionEnableNameStruct_IEC.stringArrData[i].StringValue = " ";
                 }
             }
             try
@@ -435,11 +480,11 @@ namespace Ph_CipComm_FengZhuang
             {
                 if (i < InputStruct.Length)
                 {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = InputStruct[i].varAnnotation;
+                    functionEnableNameStruct_IEC.stringArrData[i].StringValue = InputStruct[i].varAnnotation;
                 }
                 else
                 {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = " ";
+                    functionEnableNameStruct_IEC.stringArrData[i].StringValue = " ";
                 }
             }
             try

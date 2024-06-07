@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Ph_CipComm_FengZhuang</id>
+    <version>1.0.0</version>
+    <authors>Ph_CipComm_FengZhuang</authors>
+    <description>Package Description</description>
+    <repository type="git" commit="d098b5a38bd65e32aa485dd56754d75f6752018c" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="Google.Protobuf" version="3.26.1" exclude="Build,Analyzers" />
+        <dependency id="Grpc.Core" version="2.46.6" exclude="Build,Analyzers" />
+        <dependency id="Grpc.Net.Client" version="2.62.0" exclude="Build,Analyzers" />
+        <dependency id="HslCommunication" version="12.0.0" exclude="Build,Analyzers" />
+        <dependency id="NPOI" version="2.7.0" exclude="Build,Analyzers" />
+        <dependency id="OPCFoundation.NetStandard.Opc.Ua.Client" version="1.5.374.36" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\FengZhuang_EIP\Ph_CipComm_FengZhuang\bin\Debug\net6.0\Ph_CipComm_FengZhuang.runtimeconfig.json" target="lib\net6.0\Ph_CipComm_FengZhuang.runtimeconfig.json" />
+    <file src="D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\FengZhuang_EIP\Ph_CipComm_FengZhuang\bin\Debug\net6.0\Ph_CipComm_FengZhuang.dll" target="lib\net6.0\Ph_CipComm_FengZhuang.dll" />
+  </files>
+</package>

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Ph_CipComm_FengZhuang")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9455f61da58978daef9a0bf6bb913e6c0c75d059")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d098b5a38bd65e32aa485dd56754d75f6752018c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Ph_CipComm_FengZhuang")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Ph_CipComm_FengZhuang")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

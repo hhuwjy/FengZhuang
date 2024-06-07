@@ -52,15 +52,20 @@
 	<Alias Alias="PS_1">Arp.Plc.Eclr/G_udtProductionDataName_FZ1</Alias>
 	<Alias Alias="LM_1">Arp.Plc.Eclr/G_udtLifeManagementName_FZ1</Alias>
 	<Alias Alias="AS_1">Arp.Plc.Eclr/G_udtAlarmInfoName_FZ1</Alias>
-	<Alias Alias="OD_1">Arp.Plc.Eclr/G_udtOEEInfoName_FZ1</Alias>	  
+	<Alias Alias="andon_rd">Arp.Plc.Eclr/G_udtOEEInfoName_FZ1</Alias>	  
 	<Alias Alias="S_A1">Arp.Plc.Eclr/G_udtChongMoName_FZ1</Alias>
 	<Alias Alias="S_B1">Arp.Plc.Eclr/G_udtReYaName_FZ1</Alias>
 	<Alias Alias="S_C1">Arp.Plc.Eclr/G_udtDingFengName_FZ1</Alias>
 	<Alias Alias="S_D1">Arp.Plc.Eclr/G_udtZuoJiaoFengName_FZ1</Alias>
 	<Alias Alias="S_E1">Arp.Plc.Eclr/G_udtYouJiaoFengName_FZ1</Alias>
 	<Alias Alias="S_F1">Arp.Plc.Eclr/G_udtCeFengName_FZ1</Alias>
-	 
 
+	<Alias Alias="AppStatus">Arp.Plc.Eclr/G_diAppStatus</Alias>
+
+	<Alias Alias="flag_finishReadExcelFile">Arp.Plc.Eclr/G_xReadDataListFinish_FZ1</Alias>
+	<Alias Alias="flag_finishWriteExcelFile">Arp.Plc.Eclr/G_xWriteDataToExcelFinish_FZ1</Alias>
+	<Alias Alias="Switch_ReadExcelFile">Arp.Plc.Eclr/G_xReadDataList_FZ1</Alias>	  
+	<Alias Alias="Switch_WriteExcelFile">Arp.Plc.Eclr/G_xWriteDataToExcel_FZ1</Alias>
 	 
 
 

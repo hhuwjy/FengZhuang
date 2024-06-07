@@ -10,15 +10,15 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using static Ph_CipComm_FengZhuang.UserStruct;
 
 namespace Ph_CipComm_FengZhuang
 {
 
-    public class ReadExcel
-    {
-       
+public class ReadExcel
+{
         public XSSFWorkbook connectExcel(string excelFilePath)
         {
             XSSFWorkbook xssWorkbook = null;
@@ -29,9 +29,10 @@ namespace Ph_CipComm_FengZhuang
                 return xssWorkbook;
             }
 
-           
 
-            try {
+
+            try
+            {
                 using (FileStream stream = new FileStream(excelFilePath, FileMode.Open))
                 {
                     stream.Position = 0;
@@ -39,7 +40,7 @@ namespace Ph_CipComm_FengZhuang
                     stream.Close();
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
                 return xssWorkbook;
                 throw;
@@ -61,13 +62,13 @@ namespace Ph_CipComm_FengZhuang
         {
             DataTable dtTable = new DataTable();
             List<string> rowList = new List<string>();
-            
-           
+
+
             //sheet = xssWorkbook.GetSheetAt(0);
             ISheet sheet = xssWorkbook.GetSheet(sheetName);
             if (sheet == null)
             {
-                Console.WriteLine(sheetName+ "页不存在");
+                Console.WriteLine(sheetName + "页不存在");
                 return null;
 
             }
@@ -76,7 +77,7 @@ namespace Ph_CipComm_FengZhuang
             IRow headerRow = sheet.GetRow(0);
             int cellCount = headerRow.LastCellNum;
 
-     
+
 
             List<StationInfoStruct_CIP> retList = new List<StationInfoStruct_CIP>();
 
@@ -143,13 +144,13 @@ namespace Ph_CipComm_FengZhuang
         //从Excel中读取1秒的数据信息
         public OneSecInfoStruct_CIP[] ReadOneSecInfo_Excel(XSSFWorkbook xssWorkbook, string sheetName)
         {
-            
+
 
             DataTable dtTable = new DataTable();
             List<string> rowList = new List<string>();
 
-             
-           
+
+
             //sheet = xssWorkbook.GetSheetAt(0);
             ISheet sheet = xssWorkbook.GetSheet(sheetName);
             if (sheet == null)
@@ -213,8 +214,8 @@ namespace Ph_CipComm_FengZhuang
                         //}
 
                         //varIndex
-                       
-                       
+
+
 
                     }
                     else if (j == 3)
@@ -229,107 +230,7 @@ namespace Ph_CipComm_FengZhuang
         }
 
         //从Excel中读取DeviceInfo的数据信息1
-        public DeviceInfoConSturct1_CIP[] ReadOneDeviceInfoConSturct1Info_Excel(XSSFWorkbook xssWorkbook, string sheetName,int columnNumber)
-        {
-            
-
-            DataTable dtTable = new DataTable();
-            List<string> rowList = new List<string>();
-
-             
-            ISheet sheet = xssWorkbook.GetSheet(sheetName);
-            if (sheet == null)
-            {
-                Console.WriteLine( sheetName + "页不存在");
-                return null;
-
-            }
-
-
-            IRow headerRow = sheet.GetRow(0);
-            int cellCount = headerRow.LastCellNum;
-
-            List<DeviceInfoConSturct1_CIP> retList = new List<DeviceInfoConSturct1_CIP>();
-
-
-            for (int j = 0; j < cellCount; j++)
-            {
-                ICell cell = headerRow.GetCell(j);
-                if (cell == null || string.IsNullOrWhiteSpace(cell.ToString())) continue;
-                {
-                    dtTable.Columns.Add(cell.ToString());
-                }
-            }
-            for (int i = (sheet.FirstRowNum + 1); i <= sheet.LastRowNum; i++)
-            {
-                IRow row = sheet.GetRow(i);
-                if (row == null) continue;
-                if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
-
-                string str = Convert.ToString(row.GetCell(columnNumber - 1));
-                if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str)) continue;
-
-                var v = new DeviceInfoConSturct1_CIP();
-
-                for (int j = row.FirstCellNum; j < cellCount; j++)
-                {
-                    if (j == 0)
-                    {
-                        v.stationNumber = Convert.ToInt32(row.GetCell(j).NumericCellValue);
-                    }
-                    else if (j == 1)
-                    {
-                        v.stationName = Convert.ToString(row.GetCell(j));
-                        
-
-                    }
-                    else if (j == (columnNumber-1))
-                        {
-                 
-                        //varIndex
-                        string temp = Convert.ToString(row.GetCell(j));
-                        if (!(string.IsNullOrEmpty(temp) || string.IsNullOrWhiteSpace(temp)))
-                        {
-                            Regex r = new Regex(@"(?i)(?<=\[)(.*)(?=\])");//中括号[]
-                            var ms = r.Matches(temp);
-                            if (ms.Count > 0)                          
-                            v.varIndex = Convert.ToInt16(ms.ToArray()[0].Value);
-                        }
-
-                        //varName
-                        int index = temp.IndexOf('[');
-                        if(index > -1)
-                        v.varName = temp.Substring(0, index); 
-
-
-                        //varType
-                        temp = Convert.ToString(headerRow.GetCell(j));
-                        if (!(string.IsNullOrEmpty(temp) || string.IsNullOrWhiteSpace(temp)))
-                        {
-                            Regex r = new Regex(@"\((\w+)\)");
-                            var ms = r.Matches(getNewString(temp));
-                            if( ms.Count>0)
-                            v.varType = ms.ToArray()[0].Groups[1].Value;
-
-                        }
-
-                            
-
-                        
-
-                    }
-                   
-                    
-                    
-
-                }
-                retList.Add(v);
-            }
-
-            return retList.ToArray();
-        }
-
-        public DeviceInfoConSturct1_CIP[] ReadOneDeviceInfoConSturct2Info_Excel(XSSFWorkbook xssWorkbook, string sheetName, int columnNumber)
+        public DeviceInfoConSturct1_CIP[] ReadOneDeviceInfoConSturct1Info_Excel(XSSFWorkbook xssWorkbook, string sheetName, string columnName)
         {
 
 
@@ -349,6 +250,8 @@ namespace Ph_CipComm_FengZhuang
             IRow headerRow = sheet.GetRow(0);
             int cellCount = headerRow.LastCellNum;
 
+            int columnNumber = getCellIndexByName(headerRow, columnName);
+
             List<DeviceInfoConSturct1_CIP> retList = new List<DeviceInfoConSturct1_CIP>();
 
 
@@ -366,24 +269,126 @@ namespace Ph_CipComm_FengZhuang
                 if (row == null) continue;
                 if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
 
-                string str = Convert.ToString(row.GetCell(columnNumber - 1));
+                string str = Convert.ToString(row.GetCell(columnNumber));
                 if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str)) continue;
 
                 var v = new DeviceInfoConSturct1_CIP();
 
                 for (int j = row.FirstCellNum; j < cellCount; j++)
                 {
-                    if (j == 0)
+                    if (j == getCellIndexByName(headerRow, "工位序号"))
                     {
                         v.stationNumber = Convert.ToInt32(row.GetCell(j).NumericCellValue);
                     }
-                    else if (j == 1)
+                    else if (j == getCellIndexByName(headerRow, "工位名称"))
                     {
                         v.stationName = Convert.ToString(row.GetCell(j));
 
 
                     }
-                    else if (j == (columnNumber - 1))
+                    else if (j == columnNumber)
+                    {
+
+                        //varIndex
+                        string temp = Convert.ToString(row.GetCell(j));
+                        if (!(string.IsNullOrEmpty(temp) || string.IsNullOrWhiteSpace(temp)))
+                        {
+                            Regex r = new Regex(@"(?i)(?<=\[)(.*)(?=\])");//中括号[]
+                            var ms = r.Matches(temp);
+                            if (ms.Count > 0)
+                                v.varIndex = Convert.ToInt16(ms.ToArray()[0].Value);
+                        }
+
+                        //varName
+                        int index = temp.IndexOf('[');
+                        if (index > -1)
+                            v.varName = temp.Substring(0, index);
+
+
+                        //varType
+                        temp = Convert.ToString(headerRow.GetCell(j));
+                        if (!(string.IsNullOrEmpty(temp) || string.IsNullOrWhiteSpace(temp)))
+                        {
+                            Regex r = new Regex(@"\((\w+)\)");
+                            var ms = r.Matches(getNewString(temp));
+                            if (ms.Count > 0)
+                                v.varType = ms.ToArray()[0].Groups[1].Value;
+
+                        }
+
+
+
+
+
+                    }
+
+
+
+
+                }
+                retList.Add(v);
+            }
+
+            return retList.ToArray();
+        }
+
+        public DeviceInfoConSturct1_CIP[] ReadOneDeviceInfoConSturct2Info_Excel(XSSFWorkbook xssWorkbook, string sheetName, string columnName)
+        {
+
+
+            DataTable dtTable = new DataTable();
+            List<string> rowList = new List<string>();
+
+
+            ISheet sheet = xssWorkbook.GetSheet(sheetName);
+            if (sheet == null)
+            {
+                Console.WriteLine(sheetName + "页不存在");
+                return null;
+
+            }
+
+
+            IRow headerRow = sheet.GetRow(0);
+            int cellCount = headerRow.LastCellNum;
+
+            int columnNumber = getCellIndexByName(headerRow, columnName);
+
+            List<DeviceInfoConSturct1_CIP> retList = new List<DeviceInfoConSturct1_CIP>();
+
+
+            for (int j = 0; j < cellCount; j++)
+            {
+                ICell cell = headerRow.GetCell(j);
+                if (cell == null || string.IsNullOrWhiteSpace(cell.ToString())) continue;
+                {
+                    dtTable.Columns.Add(cell.ToString());
+                }
+            }
+            for (int i = (sheet.FirstRowNum + 1); i <= sheet.LastRowNum; i++)
+            {
+                IRow row = sheet.GetRow(i);
+                if (row == null) continue;
+                if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
+
+                string str = Convert.ToString(row.GetCell(columnNumber));
+                if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str)) continue;
+
+                var v = new DeviceInfoConSturct1_CIP();
+
+                for (int j = row.FirstCellNum; j < cellCount; j++)
+                {
+                    if (j == getCellIndexByName(headerRow, "工位序号"))
+                    {
+                        v.stationNumber = Convert.ToInt32(row.GetCell(j).NumericCellValue);
+                    }
+                    else if (j == getCellIndexByName(headerRow, "工位名称"))
+                    {
+                        v.stationName = Convert.ToString(row.GetCell(j));
+
+
+                    }
+                    else if (j == (columnNumber))
                     {
 
                         //varIndex
@@ -429,6 +434,7 @@ namespace Ph_CipComm_FengZhuang
 
             return retList.ToArray();
         }
+
 
 
 
@@ -662,7 +668,7 @@ namespace Ph_CipComm_FengZhuang
                                 }
                                 else if (j == 5)
                                 {
-                                    v.iPort = Convert.ToInt32 (row.GetCell(j).NumericCellValue);//这里超出int16的范围  
+                                    v.iPort = Convert.ToInt32(row.GetCell(j).NumericCellValue);//这里超出int16的范围  
 
                                 }
                                 else if (j == 6)
@@ -686,6 +692,298 @@ namespace Ph_CipComm_FengZhuang
 
         }
 
+
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// 往Excel指定列写数据
+        /// </summary>
+        /// <param name="ExcelPath">excel文件路径</param>
+        /// <param name="sheetname">Excel sheet名字</param>
+        /// <param name="columnName">要写入列的名称（从0开始）</param>
+        /// <param name="value">写入的数据（数组）</param>
+        /// <returns></returns>
+        public bool setExcelCellValue(String ExcelPath, String sheetname, string columnName, object value)
+        {
+            bool returnb = false;
+            XSSFWorkbook wk = null;
+            try
+            {
+                //读取Excell
+                using (FileStream stream = new FileStream(ExcelPath, FileMode.Open))
+                {
+                    stream.Position = 0;
+                    wk = new XSSFWorkbook(stream);
+                    stream.Close();  //把xls文件读入workbook变量里，之后就可以关闭了
+                }
+
+                //写值到sheet
+                ISheet sheet = wk.GetSheet(sheetname);
+                IRow headerRow = sheet.GetRow(0);
+                int column = getCellIndexByName(headerRow, columnName);
+
+                if (value.GetType() == typeof(stringStruct[]))
+                {
+                    stringStruct[] values = (stringStruct[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (i < values.Length)
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i].StringValue);
+                        }
+                        else
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                        }
+
+                    }
+                }
+                if (value.GetType() == typeof(string[]))
+                {
+                    string[] values = (string[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (i < values.Length)
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i]);
+                        }
+                        else
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                        }
+
+                    }
+                }
+                if (value.GetType() == typeof(StringBuilder[]))
+                {
+                    StringBuilder[] values = (StringBuilder[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (i < values.Length)
+                        {
+                            if(values[i] != null)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i].ToString());
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("");
+                            }
+                        }
+                        else
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                        }
+
+                    }
+                }
+
+
+                if (value.GetType() == typeof(bool[]))
+                {
+                    bool[] values = (bool[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                      
+                        if (i < values.Length)
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                        }
+                        else
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                        }
+                    }
+                }
+                if (value.GetType() == typeof(float[]))
+                {
+                    float[] values = (float[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (sheet.GetRow(i + 1).GetCell(column)!=null)
+                        {
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
+                        }
+                        
+                    }
+                }
+                if (value.GetType() == typeof(int[]))
+                {
+                    int[] values = (int[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        {
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
+                        }
+                            
+                    }
+                }
+                if (value.GetType() == typeof(Int16[]))
+                {
+                    Int16[] values = (Int16[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (i < values.Length)
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                        }
+                        else
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                        }
+                    }
+                }
+                if (value.GetType() == typeof(Int32[]))
+                {
+                    Int32[] values = (Int32[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        {
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
+                        }
+                            
+                    }
+                }
+                if (value.GetType() == typeof(Int64[]))
+                {
+                    Int64[] values = (Int64[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (i < values.Length)
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                        }
+                        else
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                        }
+                    }
+                }
+                if (value.GetType() == typeof(byte[]))
+                {
+                    byte[] values = (byte[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (i < values.Length)
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                        }
+                        else
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                        }
+                    }
+                }
+                if (value.GetType() == typeof(char[]))
+                {
+                    char[] values = (char[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (i < values.Length)
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                        }
+                        else
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                        }
+                    }
+                }
+                if (value.GetType() == typeof(double[]))
+                {
+                    double[] values = (double[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (i < values.Length)
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                        }
+                        else
+                        {
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                        }
+                    }
+                }
+
+                //写入Excell
+                using (FileStream stream = File.Create(ExcelPath))
+                {
+                    wk.Write(stream);
+                    stream.Close();
+                }
+
+
+                returnb = true;
+            }
+            catch (Exception)
+            {
+                returnb = false;
+                throw;
+            }
+
+            return returnb;
+
+
+        }
+
+
+        /// <summary>
+        /// 根据首行单元格的值获取此单元格所在的列索引
+        /// </summary>
+        /// <param name="headerRow">首行</param>
+        /// <param name="cellValue">单元格的值</param>
+        /// <returns>-1：获取失败；正整数为单元格所在的列索引</returns>
+        public int getCellIndexByName(IRow row, string cellValue)
+        {
+
+            int result = -1;
+
+            int cellCount = row.LastCellNum;
+
+            for (int j = 0; j < cellCount; j++)
+            {
+                ICell cell = row.GetCell(j);
+                if (string.Equals(cell.StringCellValue.Trim(), cellValue))
+                {
+                    result = j;
+                    return result;
+                }
+            }
+
+            return result;
+        }
 
 
     }

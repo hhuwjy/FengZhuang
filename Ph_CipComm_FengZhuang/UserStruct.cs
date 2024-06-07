@@ -189,14 +189,14 @@ namespace Ph_CipComm_FengZhuang
         #region stringStruct
         public struct stringStruct
         {
-            public string str;            
+            public string StringValue;            
         }
         public TypeStruct getTypeStruct_stringStruct(stringStruct StructValue)
         {
             TypeStruct structV = new TypeStruct();
 
             ObjectType v0 = new ObjectType();
-            v0.StringValue = StructValue.str;
+            v0.StringValue = StructValue.StringValue;
             v0.TypeCode = CoreType.CtString;
             structV.StructElements.Add(v0);
         
@@ -439,6 +439,45 @@ namespace Ph_CipComm_FengZhuang
 
             return structV;
         }
+
+        #endregion
+
+        #region 将读取的数据写入Excel  （六大工位，生产统计，寿命管理 ，电芯码 、极耳码、OEE数据）
+        public struct AllDataReadfromCIP
+        {
+            public float[] ZuoJiaoFengValue ;
+            public float[] YouJiaoFengValue;
+            public float[] DingFengValue;
+            public float[] ChongMoValue;
+            public float[] ReYaValue;
+            public float[] CeFengValue;
+            public int[] ProductionDataValue;
+            public int[] LifeManagementValue;
+            public bool[] OEEInfo1Value;
+            public bool[] OEEInfo2Value;
+            public StringBuilder[] BarCode;
+            public StringBuilder[] EarCode;
+
+            public AllDataReadfromCIP ()
+            {
+                ZuoJiaoFengValue = new float[7];
+                YouJiaoFengValue = new float[7];
+                DingFengValue = new float[8];
+                ChongMoValue = new float[4];
+                ReYaValue = new float[29];
+                CeFengValue = new float[8];
+                ProductionDataValue = new int[20];
+                LifeManagementValue = new int[36];
+                OEEInfo1Value = new bool[3];
+                OEEInfo2Value = new bool[12];
+                BarCode = new StringBuilder[74];
+                EarCode = new StringBuilder[74];
+            }
+        }
+
+
+
+
 
         #endregion
 

@@ -238,9 +238,15 @@ namespace Ph_CipComm_FengZhuang
             bool result = true;
             try
             {
+                //Console.WriteLine("dataAccessServiceWriteResponse");
                 dataAccessServiceWriteResponse = grpcDataAccessServiceClient.Write(dataAccessServiceWriteRequest, options);
 
+                //Console.WriteLine("count");
+
                 int count = dataAccessServiceWriteResponse.ReturnValue.Count;
+
+                //Console.WriteLine("count = {0}", count);
+
                 for (int i = 0; i < count; i++)
                 {
 
@@ -249,6 +255,8 @@ namespace Ph_CipComm_FengZhuang
                     if (Convert.ToString(dataAccessServiceWriteResponse.ReturnValue[i]) != "DaeNone")
                     {
                         result = false;
+                        Console.WriteLine("dataAccessServiceWriteResponse.ReturnValue---{0}:   {1})", i,dataAccessServiceWriteResponse.ReturnValue[i]);
+
                     }
                 }
             }

@@ -58,6 +58,11 @@ public class ReadExcel
         /// <param name="excelFilePath"></param>
         /// <param name="sheetName"></param>
         /// <returns></returns>
+        /// 
+
+        #region 从Excel中读取表格信息
+
+        //从Excel中读取加工工位的数据信息
         public StationInfoStruct_CIP[] ReadStationInfo_Excel(XSSFWorkbook xssWorkbook, string sheetName)
         {
             DataTable dtTable = new DataTable();
@@ -108,7 +113,7 @@ public class ReadExcel
                         if (!string.IsNullOrEmpty(row.GetCell(j).ToString()) && !string.IsNullOrWhiteSpace(row.GetCell(j).ToString()))
                         {
                             v.stationName = Convert.ToString(sheetName);
-                            if (j == 1)
+                            if (j == getCellIndexByName(headerRow, "地址/标签"))
                             {
                                 v.varName = Convert.ToString(row.GetCell(j));
                                 if (!(string.IsNullOrEmpty(v.varName) || string.IsNullOrWhiteSpace(v.varName)))
@@ -120,16 +125,21 @@ public class ReadExcel
                                 }
 
                             }
-                            else if (j == 2)
+                            else if (j == getCellIndexByName(headerRow, "点位名"))
                             {
                                 v.varAnnotation = Convert.ToString(row.GetCell(j));
 
                             }
-                            else if (j == 3)
+                            else if (j == getCellIndexByName(headerRow, "数据类型"))
                             {
                                 v.varType = Convert.ToString(row.GetCell(j));
 
                             }
+                            else if (j == getCellIndexByName(headerRow, "所属工位号"))
+                            {
+                                v.StationNumber = Convert.ToInt32(row.GetCell(j).NumericCellValue);
+                            }
+
                         }
                     }
                 }
@@ -228,9 +238,10 @@ public class ReadExcel
 
             return retList.ToArray();
         }
+     
 
-        //从Excel中读取DeviceInfo的数据信息1
-        public DeviceInfoConSturct1_CIP[] ReadOneDeviceInfoConSturct1Info_Excel(XSSFWorkbook xssWorkbook, string sheetName, string columnName)
+        //从Excel中读取电芯记忆信号、电芯记忆、电芯清除按钮
+        public DeviceInfoConSturct_CIP[] ReadOneDeviceInfoConSturct1Info_Excel(XSSFWorkbook xssWorkbook, string sheetName, string columnName)
         {
 
 
@@ -252,7 +263,7 @@ public class ReadExcel
 
             int columnNumber = getCellIndexByName(headerRow, columnName);
 
-            List<DeviceInfoConSturct1_CIP> retList = new List<DeviceInfoConSturct1_CIP>();
+            List<DeviceInfoConSturct_CIP> retList = new List<DeviceInfoConSturct_CIP>();
 
 
             for (int j = 0; j < cellCount; j++)
@@ -272,7 +283,7 @@ public class ReadExcel
                 string str = Convert.ToString(row.GetCell(columnNumber));
                 if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str)) continue;
 
-                var v = new DeviceInfoConSturct1_CIP();
+                var v = new DeviceInfoConSturct_CIP();
 
                 for (int j = row.FirstCellNum; j < cellCount; j++)
                 {
@@ -283,9 +294,16 @@ public class ReadExcel
                     else if (j == getCellIndexByName(headerRow, "工位名称"))
                     {
                         v.stationName = Convert.ToString(row.GetCell(j));
-
-
                     }
+                    else if (j == getCellIndexByName(headerRow, "后工位序号"))
+                    {
+                        v.nextStationNumber = Convert.ToInt32(row.GetCell(j).NumericCellValue);
+                    }
+                    else if (j == getCellIndexByName(headerRow, "生成虚拟码"))
+                    {
+                        v.pseudoCode = Convert.ToInt32(row.GetCell(j).NumericCellValue);
+                    }
+
                     else if (j == columnNumber)
                     {
 
@@ -318,8 +336,6 @@ public class ReadExcel
 
 
 
-
-
                     }
 
 
@@ -332,7 +348,9 @@ public class ReadExcel
             return retList.ToArray();
         }
 
-        public DeviceInfoConSturct1_CIP[] ReadOneDeviceInfoConSturct2Info_Excel(XSSFWorkbook xssWorkbook, string sheetName, string columnName)
+
+        // 从Excel读取电芯条码地址信息、极耳码地址信息
+        public DeviceInfoConSturct_CIP[] ReadOneDeviceInfoConSturct2Info_Excel(XSSFWorkbook xssWorkbook, string sheetName, string columnName)
         {
 
 
@@ -354,7 +372,7 @@ public class ReadExcel
 
             int columnNumber = getCellIndexByName(headerRow, columnName);
 
-            List<DeviceInfoConSturct1_CIP> retList = new List<DeviceInfoConSturct1_CIP>();
+            List<DeviceInfoConSturct_CIP> retList = new List<DeviceInfoConSturct_CIP>();
 
 
             for (int j = 0; j < cellCount; j++)
@@ -374,7 +392,7 @@ public class ReadExcel
                 string str = Convert.ToString(row.GetCell(columnNumber));
                 if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str)) continue;
 
-                var v = new DeviceInfoConSturct1_CIP();
+                var v = new DeviceInfoConSturct_CIP();
 
                 for (int j = row.FirstCellNum; j < cellCount; j++)
                 {
@@ -386,7 +404,14 @@ public class ReadExcel
                     {
                         v.stationName = Convert.ToString(row.GetCell(j));
 
-
+                    }
+                    else if (j == getCellIndexByName(headerRow, "后工位序号"))
+                    {
+                        v.nextStationNumber = Convert.ToInt32(row.GetCell(j).NumericCellValue);
+                    }
+                    else if (j == getCellIndexByName(headerRow, "生成虚拟码"))
+                    {
+                        v.pseudoCode = Convert.ToInt32(row.GetCell(j).NumericCellValue);
                     }
                     else if (j == (columnNumber))
                     {
@@ -435,7 +460,7 @@ public class ReadExcel
             return retList.ToArray();
         }
 
-
+        #endregion
 
 
         //从Excel中读取DeviceInfo的数据信息2
@@ -895,6 +920,28 @@ public class ReadExcel
                             
                     }
                 }
+                if (value.GetType() == typeof(UInt32[]))
+                {
+                    UInt32[] values = (UInt32[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        {
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
+                        }
+
+                    }
+                }
+
+
                 if (value.GetType() == typeof(Int64[]))
                 {
                     Int64[] values = (Int64[])value;

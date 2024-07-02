@@ -83,7 +83,7 @@ namespace Ph_CipComm_FengZhuang
             {
                 asciiString += ConvertFloatToAscii(value[i]);
             }
-            asciiString +=",";
+            //asciiString +=",";
             return asciiString;
         }
 

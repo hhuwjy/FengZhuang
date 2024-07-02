@@ -5,7 +5,7 @@
     <version>1.0.0</version>
     <authors>Ph_CipComm_FengZhuang</authors>
     <description>Package Description</description>
-    <repository type="git" commit="d2a1c9fab28e162329df4e4cce08eee7b0a759c1" />
+    <repository type="git" commit="0594666abf849ad9fbce56071cca2e0fd0c844eb" />
     <dependencies>
       <group targetFramework="net6.0">
         <dependency id="Google.Protobuf" version="3.26.1" exclude="Build,Analyzers" />

@@ -314,12 +314,28 @@ namespace Ph_CipComm_FengZhuang
 
 
                             #region 单独设备总览表 + 发送
+
+                            var deviceInfoStructList_IEC = new DeviceInfoStructList_IEC();
+
                             deviceInfoStruct_IEC = readExcel.ReadDeviceInfo_Excel(excelWorkbook, "封装设备总览");
+
+
+                            deviceInfoStructList_IEC.iCount = (short)deviceInfoStruct_IEC.Length;
+                            for (int i = 0; i<deviceInfoStruct_IEC.Length; i++)
+                            {
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strDeviceName = deviceInfoStruct_IEC[i].strDeviceName;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strDeviceCode = deviceInfoStruct_IEC[i].strDeviceCode;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].iStationCount = deviceInfoStruct_IEC[i].iStationCount;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strPLCType = deviceInfoStruct_IEC[i].strPLCType;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strProtocol = deviceInfoStruct_IEC[i].strProtocol;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strIPAddress = deviceInfoStruct_IEC[i].strIPAddress;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].iPort = deviceInfoStruct_IEC[i].iPort;
+                            }
 
                             listWriteItem.Clear();
                             try
                             {
-                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["DeviceInfo"], Arp.Type.Grpc.CoreType.CtStruct, deviceInfoStruct_IEC[0]));
+                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["DeviceInfo"], Arp.Type.Grpc.CoreType.CtStruct, deviceInfoStructList_IEC));
                                 var writeItemsArray = listWriteItem.ToArray();
                                 var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
                                 bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
@@ -645,7 +661,7 @@ namespace Ph_CipComm_FengZhuang
 
                                     TimeSpan end = new TimeSpan(DateTime.Now.Ticks);
                                     DateTime nowDisplay = DateTime.Now;
-                                    TimeSpan dur = (start - end).Duration();
+                                    TimeSpan dur = (end - start).Duration();
 
                                    
                                     if (dur.TotalMilliseconds < 100)
@@ -705,7 +721,7 @@ namespace Ph_CipComm_FengZhuang
 
                                     TimeSpan end = new TimeSpan(DateTime.Now.Ticks);
                                     DateTime nowDisplay = DateTime.Now;
-                                    TimeSpan dur = (start - end).Duration();
+                                    TimeSpan dur = (end - start).Duration();
 
                                     
 

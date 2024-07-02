@@ -7,16 +7,12 @@
       "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\grpccomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\grpccomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\omroncomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\omroncomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\userstruct.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\userstruct.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\ph_cipcomm_fengzhuang.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\ph_cipcomm_fengzhuang.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\toolapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -27,8 +23,16 @@
       "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\readfromexcel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\grpccomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\grpccomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\grpcsubscribenodes\\grpcsubscribenodes.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
       "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\grpcsubscribenodes\\grpcsubscribenodes.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\fengzhuang_eip\\ph_cipcomm_fengzhuang\\omroncomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C5C1EA4-9BD1-4277-9B5E-85AE20A00F90}|Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj|solutionrelative:ph_cipcomm_fengzhuang\\omroncomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -48,7 +52,7 @@
               "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\Program.cs",
               "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Program.cs",
               "RelativeToolTip": "Ph_CipComm_FengZhuang\\Program.cs",
-              "ViewState": "AQIAABMCAAAAAAAAAAAQwLgBAAAAAAAA",
+              "ViewState": "AQIAADsBAAAAAAAAAAAgwEsBAABwAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-06T09:54:47.161Z",
               "IsPinned": true,
@@ -56,52 +60,63 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
+              "Title": "Ph_CipComm_FengZhuang.csproj",
+              "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj",
+              "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj",
+              "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj",
+              "RelativeToolTip": "Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAADwvwAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-06-25T03:23:00.724Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "GrpcComm.cs",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\GrpcComm.cs",
               "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\GrpcComm.cs",
               "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\GrpcComm.cs",
               "RelativeToolTip": "Ph_CipComm_FengZhuang\\GrpcComm.cs",
-              "ViewState": "AQIAADwAAAAAAAAAAAAYwP8AAAAVAAAA",
+              "ViewState": "AQIAABsBAAAAAAAAAAAmwAEBAACXAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-07T03:15:50.71Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-07T03:15:50.71Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 7,
               "Title": "OmronComm.cs",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\OmronComm.cs",
               "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\OmronComm.cs",
               "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\OmronComm.cs",
               "RelativeToolTip": "Ph_CipComm_FengZhuang\\OmronComm.cs",
-              "ViewState": "AQIAACwBAAAAAAAAAAAcwC8BAAAAAAAA",
+              "ViewState": "AQIAADsAAAAAAAAAAAAQwEwAAABvAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-07T02:50:40.016Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-07T02:50:40.016Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "ToolAPI.cs",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\ToolAPI.cs",
               "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\ToolAPI.cs",
               "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\ToolAPI.cs",
               "RelativeToolTip": "Ph_CipComm_FengZhuang\\ToolAPI.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAE8AAAAIAAAA",
+              "ViewState": "AQIAAEEAAAAAAAAAAAAQwFUAAAAgAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-06T10:43:12.385Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "UserStruct.cs",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\UserStruct.cs",
               "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\UserStruct.cs",
               "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\UserStruct.cs",
               "RelativeToolTip": "Ph_CipComm_FengZhuang\\UserStruct.cs",
-              "ViewState": "AQIAACADAAAAAAAAAAAswDYDAAArAAAA",
+              "ViewState": "AQIAAHcCAAAAAAAAAAAmwIkCAAAvAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-06T08:48:04.799Z",
               "EditorCaption": ""
@@ -114,21 +129,22 @@
               "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
               "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
               "RelativeToolTip": "Ph_CipComm_FengZhuang\\GrpcSubscribeNodes\\GrpcSubscribeNodes.xml",
-              "ViewState": "AQIAAB8AAAAAAAAAAAAuwCwAAAAAAAAA",
+              "ViewState": "AQIAAB8AAAAAAAAAAAAuwC8AAAA/AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
               "WhenOpened": "2024-06-07T06:12:37.282Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "ReadFromExcel.cs",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\ReadFromExcel.cs",
               "RelativeDocumentMoniker": "Ph_CipComm_FengZhuang\\ReadFromExcel.cs",
               "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\ReadFromExcel.cs",
               "RelativeToolTip": "Ph_CipComm_FengZhuang\\ReadFromExcel.cs",
-              "ViewState": "AQIAAHgAAAAAAAAAAAAowIkAAAAbAAAA",
+              "ViewState": "AQIAAEUCAAAAAAAAAADwv9cCAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-06T10:19:13.31Z"
+              "WhenOpened": "2024-06-06T10:19:13.31Z",
+              "EditorCaption": ""
             }
           ]
         }

@@ -145,6 +145,11 @@ namespace Ph_CipComm_FengZhuang
 
         static void Main(string[] args)
         {
+            if (!HslCommunication.Authorization.SetAuthorizationCode("b7fb5c78-1c92-41f5-9fd3-de73313ba9c2"))
+            {              
+                Console.WriteLine("授权失败!当前程序只能使用24小时!");
+            }
+           
 
             int stepNumber = 5;
 
@@ -492,7 +497,9 @@ namespace Ph_CipComm_FengZhuang
                                 int lastIndex = out_power[out_power.Length - 1].varIndex;
                                 bool[] Alarm_Data = new bool[lastIndex + 1];
 
-                                var DeviceDataStruct = new DeviceDataStruct_IEC();
+                                DeviceDataStruct_IEC DeviceDataStruct = new DeviceDataStruct_IEC();
+
+                                //logNet.WriteError("-------测试log-------", "---------DeviceDataStruct进行了清零---------");  //测试用
 
                                 while (isThreadOneRunning)
                                 {
@@ -774,8 +781,9 @@ namespace Ph_CipComm_FengZhuang
                                     listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, 1));
                                     if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                                     {
-                                        logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                        // logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
                                         //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                        continue;
                                     }
                                     else
                                     {
@@ -793,8 +801,9 @@ namespace Ph_CipComm_FengZhuang
                                     listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -1));
                                     if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                                     {
-                                        logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                        //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
                                         //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                        continue;
                                     }
                                     else
                                     {
@@ -852,10 +861,10 @@ namespace Ph_CipComm_FengZhuang
 
 
                             #region 检测PLCnext和Omron PLC之间的连接
+
                             IPStatus iPStatus;
                             iPStatus = _cip[0].IpAddressPing();  //判断与PLC的物理连接状态
                             
-
 
                             if (iPStatus != 0)
                             {
@@ -867,8 +876,9 @@ namespace Ph_CipComm_FengZhuang
                                 listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -2));
                                 if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                                 {
-                                    logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                    //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
                                     //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                    continue;
                                 }
                                 else
                                 {
@@ -877,8 +887,88 @@ namespace Ph_CipComm_FengZhuang
                                 }
 
 
-                            };
+                            }
+
+                            if (iPStatus == 0)
+                            {
+
+                                //APP Status ：Running
+                                listWriteItem.Clear();
+                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, 1));
+                                if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
+                                {
+                                    //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                    continue;
+                                }
+                                else
+                                {
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
+                                    logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
+                                }
+
+
+                            }
+
+
                             #endregion
+
+
+
+                            #region 检测CIP连接
+
+                            var retConnect_0 = _cip[0].ConnectServer();
+                            var retConnect_1 = _cip[1].ConnectServer();
+                            var retConnect_2 = _cip[2].ConnectServer();
+
+                            if ((!retConnect_0.IsSuccess || !retConnect_1.IsSuccess || !retConnect_2.IsSuccess) && iPStatus == 0)
+                            {
+
+                                logNet.WriteError("[CIP]", "CIP连接失败，尝试重启APP");
+                        
+                                //APP Status ： Error
+                                listWriteItem.Clear();
+                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -2));
+                                if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
+                                {
+                                    //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                    continue;
+                                }
+                                else
+                                {
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
+                                    logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
+                                }
+
+
+
+
+                                //停止线程
+                                isThreadOneRunning = false;
+                                isThreadTwoRunning = false;
+                                isThreadThreeRunning = false;
+
+                                for (int i = 0; i < clientNum; i++)
+                                {
+                                    _cip[i].ConnectClose();
+                                    //Console.WriteLine(" CIP {0} Connect closed", i);
+                                    logNet.WriteInfo("[CIP]", "CIP连接断开" + i.ToString());
+                                }
+
+                                Thread.Sleep(1000);//等待线程退出
+
+                                stepNumber = 10;
+
+
+
+
+
+                            }
+
+
+                            #endregion
+
 
 
                             #region IEC发送触发信号,将采集值写入Excel

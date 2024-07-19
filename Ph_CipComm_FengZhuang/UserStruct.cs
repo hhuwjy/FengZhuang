@@ -1009,6 +1009,29 @@ namespace Ph_CipComm_FengZhuang
                 Value_ALM = new bool[2000];
                 Value_LM = new UInt32[36];
                 Value_OEE = new bool[20];
+
+                for (int i = 0; i < Value_FE.Length; i++)
+                {
+                    Value_FE[i] = false;
+                }
+                for (int i = 0; i < Value_PD.Length; i++)
+                {
+                    Value_PD[i] = 0;
+                }
+                for (int i = 0; i < Value_ALM.Length; i++)
+                {
+                    Value_ALM[i] = false;
+                }
+                for (int i = 0; i < Value_LM.Length; i++)
+                {
+                    Value_LM[i] = 0;
+                }
+                for (int i = 0; i < Value_OEE.Length; i++)
+                {
+                    Value_OEE[i] = false;
+                }
+
+
             }
 
         }

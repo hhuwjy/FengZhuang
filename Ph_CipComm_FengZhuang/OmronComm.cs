@@ -117,7 +117,7 @@ namespace Ph_CipComm_FengZhuang
                             {
                                 StationListlnfo.arrDataPoint[input[i].stationNumber - 1].strCellCode = tool.ConvertFloatArrayToAscii(ret.Content, 0 + 50 * i, 49 + 50 * i);
 
-                                allDataReadfromCIP.BarCode[input[i].stationNumber - 1] = StationListlnfo.arrDataPoint[input[i].stationNumber - 1].strCellCode;   
+                                //allDataReadfromCIP.BarCode[input[i].stationNumber - 1] = StationListlnfo.arrDataPoint[input[i].stationNumber - 1].strCellCode;   
                             }
                         }
                         else
@@ -140,7 +140,7 @@ namespace Ph_CipComm_FengZhuang
                             {
                                 StationListlnfo.arrDataPoint[input[i].stationNumber - 1].strPoleEarCode = tool.ConvertFloatArrayToAscii(ret.Content, 0 + 50 * i, 49 + 50 * i);
 
-                                allDataReadfromCIP.EarCode[input[i].stationNumber - 1] = StationListlnfo.arrDataPoint[input[i].stationNumber - 1].strPoleEarCode;
+                                //allDataReadfromCIP.EarCode[input[i].stationNumber - 1] = StationListlnfo.arrDataPoint[input[i].stationNumber - 1].strPoleEarCode;
                             }
                         }
                         else
@@ -267,21 +267,50 @@ namespace Ph_CipComm_FengZhuang
                 }
             }         
         }
-        
+
         #endregion
 
 
 
-        //通过数组的起终索引，来发送子数组 （六大工位）
+        //通过数组的起终索引，来发送子数组 （九大工位） 优化后的方法
+        public void WriteSubArray(List<StationInfoStruct_CIP[]> StationDataStruct, float[] sourceArray, ref UDT_ProcessStationDataValue ProcessStationDataValue)
+        {
+            var StationNo = 0;
+            float temp_float = 0;
+
+            foreach (var input in StationDataStruct)
+            {
+                ProcessStationDataValue.arrDataPoint[StationNo].iDataCount = (short)input.Length;     //每个加工工位的点位个数
+
+                for (var i = 0; i < input.Length; i++)
+                {
+                    temp_float = (float)(sourceArray[input[i].varIndex] / Math.Pow(10, input[i].varMagnification));
+
+                    ProcessStationDataValue.arrDataPoint[StationNo].arrDataPoint[i].StringValue = temp_float.ToString();
+
+                }
+
+                StationNo++; //工位号+1；
+            }
+
+        }
+
+
+
+
+        //通过数组的起终索引，来发送子数组 （六大工位） old way 不太聪明
         public void WriteSubArray(StationInfoStruct_CIP[] input, ref AllDataReadfromCIP allDataReadfromCIP, float[] sourceArray, ref UDT_ProcessStationDataValue ProcessStationDataValue)
         {
             var senddata = new string[input.Length];
             var i = 0;  //写入数组中的索引
+           
+            float temp_float = 0;
 
             //按照数组索引 把数据放入发送区
             for (int j = 0; j < input.Length; j++)
             {
-                senddata[j] = sourceArray[input[j].varIndex].ToString();
+                temp_float = (float)(sourceArray[input[j].varIndex] / Math.Pow(10, input[j].varMagnification));
+                senddata[j] = temp_float.ToString();
             }
 
             // 根据所属工位号 判断数组的索引

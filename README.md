@@ -1,7 +1,4 @@
 # FengZhuang
 FengZhuang App for GuanYu
 
-APP状态码
--1 错误
-0 未启动
-1 正常
+4810 APP 单独的封装设备

@@ -414,7 +414,7 @@ namespace Ph_CipComm_FengZhuang
                             #endregion
 
 
-                            #region 读取并发送六大工位的点位名
+                            #region 读取并发送九大工位的点位名
 
                             var ProcessStationNameStruct = new ProcessStationNameStruct_IEC();
 
@@ -625,52 +625,63 @@ namespace Ph_CipComm_FengZhuang
                                 {
                                     TimeSpan start = new TimeSpan(DateTime.Now.Ticks);
 
-                                    #region 先一起读上来一整个数组，触发信号来了再通过Grpc发送
 
-                                    //读取报警数组的最后一个索引数，索引数+1 等于数组元素数量
-                                    int lastIndex = cefeng[cefeng.Length - 1].varIndex;
-                                    var Station_Data = new float[lastIndex + 1];
+                                    #region 读整数组，按照索引写入各工位
 
-                                    OperateResult<float[]> ret = cip.ReadFloat(chongmo[0].varName, (ushort)(lastIndex + 1));  //读取整个加工工位数据
-                                    if (ret.IsSuccess)
+                                    OperateResult<bool> OEE_Green = cip.ReadBool(Y6[1].varName);   // 绿灯才读取并发送过程数据
+
+                                    if (OEE_Green.IsSuccess && OEE_Green.Content)
                                     {
-                                        Station_Data = ret.Content;
+
+                                        //读取报警数组的最后一个索引数，索引数+1 等于数组元素数量
+                                        var lastIndex = cefeng[cefeng.Length - 1].varIndex;
+
+                                        OperateResult<float[]> ret = cip.ReadFloat(chongmo[0].varName, (ushort)(lastIndex + 1));  //读取整个加工工位数据
+                                        if (ret.IsSuccess)
+                                        {
+
+                                            // 将大数组里的数组按照工位写进 ProcessStationDataValue 结构体中
+
+                                            List<StationInfoStruct_CIP[]> StationDataStruct = new List<StationInfoStruct_CIP[]>
+                                            {
+                                                chongmo, reya_1, reya_2, reya_3, reya_4, dingfeng, zuojiaofeng, youjiaofeng, cefeng
+                                            };
+
+                                            ProcessStationDataValue.iDataCount = (short)StationDataStruct.Count;   //写入一共几个加工工位
+
+                                            omronClients.WriteSubArray(StationDataStruct, ret.Content, ref ProcessStationDataValue);
+
+
+                                            //Grpc 发送加工工位数据采集值
+
+                                            listWriteItem.Clear();
+
+                                            try
+                                            {
+                                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["ProcessStationData"], Arp.Type.Grpc.CoreType.CtStruct, ProcessStationDataValue));
+                                                var writeItemsArray = listWriteItem.ToArray();
+                                                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                                                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                logNet.WriteError("[Grpc]", "加工工位数据发送失败：" + e);
+
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            //Console.WriteLine(Vacuum_Alarm[0].varName + "Array Read Failed");
+                                            logNet.WriteError("[CIP]", Vacuum_Alarm[0].varName + "数据读取失败");
+                                        }
+
+
                                     }
-                                    else
-                                    {
-                                        //Console.WriteLine(Vacuum_Alarm[0].varName + "Array Read Failed");
-                                        logNet.WriteError("[CIP]", Vacuum_Alarm[0].varName + "数据读取失败");
-                                    }
-                                    ProcessStationDataValue.iDataCount = 9;
-
-                                    // 将大数组里的数组按照工位写进 ProcessStationDataValue 结构体中
-                                    omronClients.WriteSubArray(chongmo, ref allDataReadfromCIP, Station_Data, ref ProcessStationDataValue);                                                                      
-                                    omronClients.WriteSubArray(reya_1, ref allDataReadfromCIP, Station_Data, ref ProcessStationDataValue);
-                                    omronClients.WriteSubArray(reya_2, ref allDataReadfromCIP, Station_Data, ref ProcessStationDataValue);
-                                    omronClients.WriteSubArray(reya_3, ref allDataReadfromCIP, Station_Data, ref ProcessStationDataValue);
-                                    omronClients.WriteSubArray(reya_4, ref allDataReadfromCIP, Station_Data, ref ProcessStationDataValue);                             
-                                    omronClients.WriteSubArray(dingfeng, ref allDataReadfromCIP, Station_Data, ref ProcessStationDataValue);
-                                    omronClients.WriteSubArray(zuojiaofeng, ref allDataReadfromCIP, Station_Data, ref ProcessStationDataValue);
-                                    omronClients.WriteSubArray(youjiaofeng, ref allDataReadfromCIP, Station_Data, ref ProcessStationDataValue);
-                                    omronClients.WriteSubArray(cefeng, ref allDataReadfromCIP, Station_Data, ref ProcessStationDataValue);
 
 
-                                    //Grpc 发送加工工位数据采集值
-
-                                    listWriteItem.Clear();
-
-                                    try
-                                    {
-                                        listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["ProcessStationData"], Arp.Type.Grpc.CoreType.CtStruct, ProcessStationDataValue));
-                                        var writeItemsArray = listWriteItem.ToArray();
-                                        var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                                        bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("[Grpc]", "加工工位数据发送失败：" + e);
-                                 
-                                    }
+                                
 
                                     #endregion
 
@@ -686,7 +697,7 @@ namespace Ph_CipComm_FengZhuang
                                     }
                                     else
                                     {
-                                        logNet.WriteInfo("Thread ProcessStation Data Read Time : " + (dur.TotalMilliseconds).ToString());
+                                        logNet.WriteInfo("4810 过程数据读取时间 : " + (dur.TotalMilliseconds).ToString());
                                         //Console.WriteLine("Thread ReadStationInfo1 read time:{0} read Duration:{1}", nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff"), dur.TotalMilliseconds);
 
                                     }
@@ -709,29 +720,38 @@ namespace Ph_CipComm_FengZhuang
                                 {
                                   
                                     TimeSpan start = new TimeSpan(DateTime.Now.Ticks);
+                                    OperateResult<bool> OEE_Green = cip.ReadBool(Y6[1].varName);   // 绿灯才读取并发送过程数据
 
-                                    
-                                    omronClients.ReadDeviceInfoConSturct(Auto_Process, cip, ref allDataReadfromCIP, ref StationListlnfo);
-                                    omronClients.ReadDeviceInfoConSturct(Clear_Manual, cip, ref allDataReadfromCIP, ref StationListlnfo);
-                                    omronClients.ReadDeviceInfoConSturct(Battery_Memory, cip, ref allDataReadfromCIP, ref StationListlnfo);
-                                    omronClients.ReadDeviceInfoConSturct(BarCode, cip, ref allDataReadfromCIP, ref StationListlnfo);
-                                    omronClients.ReadDeviceInfoConSturct(EarCode, cip, ref allDataReadfromCIP, ref StationListlnfo);
+                                    if (OEE_Green.IsSuccess && OEE_Green.Content)
+                                    {
 
-                                 
-                                    // Grpc发送数据给IEC                     
-                                    try
-                                    {
-                                        listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["StationListlnfo"], Arp.Type.Grpc.CoreType.CtStruct, StationListlnfo));
-                                        var writeItemsArray = listWriteItem.ToArray();
-                                        var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                                        bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+                                        omronClients.ReadDeviceInfoConSturct(Auto_Process, cip, ref allDataReadfromCIP, ref StationListlnfo);
+                                        omronClients.ReadDeviceInfoConSturct(Clear_Manual, cip, ref allDataReadfromCIP, ref StationListlnfo);
+                                        omronClients.ReadDeviceInfoConSturct(Battery_Memory, cip, ref allDataReadfromCIP, ref StationListlnfo);
+                                        omronClients.ReadDeviceInfoConSturct(BarCode, cip, ref allDataReadfromCIP, ref StationListlnfo);
+                                        omronClients.ReadDeviceInfoConSturct(EarCode, cip, ref allDataReadfromCIP, ref StationListlnfo);
+
+
+                                        // Grpc发送数据给IEC
+
+                                        listWriteItem.Clear();
+                                        try
+                                        {
+                                            listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["StationListlnfo"], Arp.Type.Grpc.CoreType.CtStruct, StationListlnfo));
+                                            var writeItemsArray = listWriteItem.ToArray();
+                                            var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                                            bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            logNet.WriteError("[Grpc]", "设备信息数据发送失败：" + e);
+                                            //Console.WriteLine("ERRO: {0}，{1}", e, nodeidDictionary.GetValueOrDefault(i.ToString()));
+                                        }
+                                       
+
                                     }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("[Grpc]", "设备信息数据发送失败：" + e);
-                                        //Console.WriteLine("ERRO: {0}，{1}", e, nodeidDictionary.GetValueOrDefault(i.ToString()));
-                                    }
-                                    listWriteItem.Clear();                               
+
+                                                              
 
 
                                     TimeSpan end = new TimeSpan(DateTime.Now.Ticks);
@@ -747,7 +767,7 @@ namespace Ph_CipComm_FengZhuang
                                     }
                                     else
                                     {
-                                        logNet.WriteInfo("Thread ReadDeviceInfo read time : " + (dur.TotalMilliseconds).ToString());
+                                        logNet.WriteInfo("4810 设备信息数据读取时间 : " + (dur.TotalMilliseconds).ToString());
                                         //Console.WriteLine("Thread ReadDeviceInfo read time:{0} read Duration:{1}", nowDisplay.ToString("yyyy-MM-dd HH:mm:ss:fff"), dur.TotalMilliseconds);
 
                                     }
@@ -783,41 +803,10 @@ namespace Ph_CipComm_FengZhuang
                                     thr[2].Start();  //读设备信息
 
 
-
-                                    ////APP Status ： running
-                                    //listWriteItem.Clear();
-                                    //listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, 1));
-                                    //if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
-                                    //{
-                                    //    // logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
-                                    //    //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
-                                    //    continue;
-                                    //}
-                                    //else
-                                    //{
-                                    //    //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
-                                    //    logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
-                                    //}
-
                                 }
                                 catch
                                 {
                                     Console.WriteLine("Thread quit");
-
-                                    ////APP Status ： Error
-                                    //listWriteItem.Clear();
-                                    //listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -1));
-                                    //if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
-                                    //{
-                                    //    //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
-                                    //    //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
-                                    //    continue;
-                                    //}
-                                    //else
-                                    //{
-                                    //    //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
-                                    //    logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
-                                    //}
 
                                     stepNumber = 1000;
                                     break;
@@ -894,298 +883,242 @@ namespace Ph_CipComm_FengZhuang
 
 
 
-                            //#region 检测CIP连接
+                            #region IEC发送触发信号,将采集值写入Excel  （屏蔽）
 
-                            //var retConnect_0 = _cip[0].ConnectServer();
-                            //var retConnect_1 = _cip[1].ConnectServer();
-                            //var retConnect_2 = _cip[2].ConnectServer();
-
-                            //if ((!retConnect_0.IsSuccess || !retConnect_1.IsSuccess || !retConnect_2.IsSuccess) && iPStatus == 0)
+                            //dataAccessServiceReadSingleRequest = new IDataAccessServiceReadSingleRequest();
+                            //dataAccessServiceReadSingleRequest.PortName = nodeidDictionary["Switch_WriteExcelFile"];
+                            //if (grpcToolInstance.ReadSingleDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceReadSingleRequest, new IDataAccessServiceReadSingleResponse(), options1).BoolValue)
                             //{
-
-                            //    logNet.WriteError("[CIP]", "CIP连接失败，尝试重启APP");
-                        
-                            //    //APP Status ： Error
+                            //    //复位信号点: Switch_WriteExcelFile
                             //    listWriteItem.Clear();
-                            //    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -2));
+                            //    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["Switch_WriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, false)); //Write Data to DataAccessService                                 
                             //    if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                             //    {
-                            //        //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
-                            //        //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
-                            //        continue;
+                            //        //Console.WriteLine("{0}      Switch_WriteExcelFile: success", DateTime.Now);
+                            //        logNet.WriteInfo("[Grpc]", "Switch_WriteExcelFile 写入IEC成功");
                             //    }
                             //    else
                             //    {
-                            //        //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
-                            //        logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
+                            //        //Console.WriteLine("{0}      Switch_WriteExcelFile: fail", DateTime.Now);
+                            //        logNet.WriteError("[Grpc]", "Switch_WriteExcelFile 写入IEC失败");
                             //    }
 
-
-
-
-                            //    //停止线程
-                            //    isThreadOneRunning = false;
-                            //    isThreadTwoRunning = false;
-                            //    isThreadThreeRunning = false;
-
-                            //    for (int i = 0; i < clientNum; i++)
+                            //    //将读取的值写入Excel 
+                            //    thr[3] = new Thread(() =>
                             //    {
-                            //        _cip[i].ConnectClose();
-                            //        //Console.WriteLine(" CIP {0} Connect closed", i);
-                            //        logNet.WriteInfo("[CIP]", "CIP连接断开" + i.ToString());
+                            //        var ExcelPath = "/opt/plcnext/apps/HGFZData.xlsx";
+                            //        //var ExcelPath = Directory.GetCurrentDirectory() + "\\HGFZData.xlsx";
+
+                            //        var allDataReadfromCIP_temp = allDataReadfromCIP;  //将数据缓存区的值赋给临时变量
+
+                            //        #region 将数据缓存区的值写入Excel
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "设备信息", "电芯条码地址采集值", allDataReadfromCIP_temp.BarCode);
+                            //            logNet.WriteInfo("WriteData", "电芯条码地址采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "电芯条码地址采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（冲膜）", "采集值", allDataReadfromCIP_temp.ChongMoValue);
+                            //            logNet.WriteInfo("WriteData", "加工工位（冲膜）采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "电芯条码地址采集值写入Excel失败原因: " + e);
+                            //            //Console.WriteLine("加工工位（冲膜）采集值写入Excel失败原因: {0} ", e);
+
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "设备信息", "极耳码地址采集值", allDataReadfromCIP_temp.EarCode);
+                            //            logNet.WriteInfo("WriteData", "极耳码地址采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            // Console.WriteLine("极耳码地址采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "极耳码地址采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（热压1）", "采集值", allDataReadfromCIP_temp.ReYaValue_1);
+                            //            logNet.WriteInfo("加工工位（热压1）采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("加工工位（热压）采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "加工工位（热压1）采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（热压2）", "采集值", allDataReadfromCIP_temp.ReYaValue_2);
+                            //            logNet.WriteInfo("加工工位（热压2）采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("加工工位（热压）采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "加工工位（热压2）采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（热压3）", "采集值", allDataReadfromCIP_temp.ReYaValue_3);
+                            //            logNet.WriteInfo("加工工位（热压3）采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("加工工位（热压）采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "加工工位（热压3）采集值写入Excel失败原因: " + e);
+                            //        }
+
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（热压4）", "采集值", allDataReadfromCIP_temp.ReYaValue_4);
+                            //            logNet.WriteInfo("加工工位（热压4）采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("加工工位（热压）采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "加工工位（热压4）采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（顶封）", "采集值", allDataReadfromCIP_temp.DingFengValue);
+                            //            logNet.WriteInfo("加工工位（顶封）采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("加工工位（顶封）采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "加工工位（顶封）采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（左角封）", "采集值", allDataReadfromCIP_temp.ZuoJiaoFengValue);
+                            //            logNet.WriteInfo("加工工位（左角封）采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("加工工位（左角封）采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "加工工位（左角封）采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（右角封）", "采集值", allDataReadfromCIP_temp.YouJiaoFengValue);
+                            //            logNet.WriteInfo("加工工位（右角封）采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("加工工位（右角封）采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "加工工位（右角封）采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（侧封）", "采集值", allDataReadfromCIP_temp.CeFengValue);
+                            //            logNet.WriteInfo("加工工位（侧封）采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("加工工位（侧封）采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "加工工位（侧封）采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "生产统计", "采集值", allDataReadfromCIP_temp.ProductionDataValue);
+                            //            logNet.WriteInfo("生产统计采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("生产统计采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "生产统计采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "寿命管理", "采集值", allDataReadfromCIP_temp.LifeManagementValue);
+                            //            logNet.WriteInfo("寿命管理采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("寿命管理采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "寿命管理采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "功能开关", "采集值", allDataReadfromCIP_temp.FunctionEnableValue);
+                            //            logNet.WriteInfo("功能开关采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("功能开关采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "功能开关采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "OEE", "采集值", allDataReadfromCIP_temp.OEEInfo1Value);
+                            //            logNet.WriteInfo("OEE采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("OEE采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "OEE采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath, "OEE(2)", "采集值", allDataReadfromCIP_temp.OEEInfo2Value);
+                            //            logNet.WriteInfo("OEE(2)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            //Console.WriteLine("OEE(2)采集值写入Excel失败原因: {0} ", e);
+                            //            logNet.WriteError("WriteData", "OEE(2)采集值写入Excel失败原因: " + e);
+                            //        }
+                            //        #endregion
+
+                            //        //给IEC写入 采集值写入成功的信号
+                            //        var tempFlag_finishWriteExcelFile = true;
+
+                            //        listWriteItem.Clear();
+                            //        listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["flag_finishWriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, tempFlag_finishWriteExcelFile));
+                            //        if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
+                            //        {
+                            //            //Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: success", DateTime.Now);
+                            //            logNet.WriteInfo("[Grpc]", "flag_finishWriteExcelFile 写入IEC成功");
+                            //        }
+                            //        else
+                            //        {
+                            //            //Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: fail", DateTime.Now);
+                            //            logNet.WriteError("[Grpc]", "flag_finishWriteExcelFile 写入IEC失败");
+                            //        }
+
+                            //        IecTriggersNumber = 0;  //为了防止IEC连续两次赋值true
+
+                            //    });
+
+                            //    IecTriggersNumber++;
+
+                            //    if (IecTriggersNumber == 1)
+                            //    {
+                            //        thr[3].Start();
                             //    }
-
-                            //    Thread.Sleep(1000);//等待线程退出
-
-                            //    stepNumber = 10;
-
-
-
-
 
                             //}
-
-
-                            //#endregion
-
-
-
-                            #region IEC发送触发信号,将采集值写入Excel
-
-                            dataAccessServiceReadSingleRequest = new IDataAccessServiceReadSingleRequest();
-                            dataAccessServiceReadSingleRequest.PortName = nodeidDictionary["Switch_WriteExcelFile"];
-                            if (grpcToolInstance.ReadSingleDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceReadSingleRequest, new IDataAccessServiceReadSingleResponse(), options1).BoolValue)
-                            {
-                                //复位信号点: Switch_WriteExcelFile
-                                listWriteItem.Clear();
-                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["Switch_WriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, false)); //Write Data to DataAccessService                                 
-                                if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
-                                {
-                                    //Console.WriteLine("{0}      Switch_WriteExcelFile: success", DateTime.Now);
-                                    logNet.WriteInfo("[Grpc]", "Switch_WriteExcelFile 写入IEC成功");
-                                }
-                                else
-                                {
-                                    //Console.WriteLine("{0}      Switch_WriteExcelFile: fail", DateTime.Now);
-                                    logNet.WriteError("[Grpc]", "Switch_WriteExcelFile 写入IEC失败");
-                                }
-
-                                //将读取的值写入Excel 
-                                thr[3] = new Thread(() =>
-                                {
-                                    var ExcelPath = "/opt/plcnext/apps/HGFZData.xlsx";
-                                    //var ExcelPath = Directory.GetCurrentDirectory() + "\\HGFZData.xlsx";
-
-                                    var allDataReadfromCIP_temp = allDataReadfromCIP;  //将数据缓存区的值赋给临时变量
-
-                                    #region 将数据缓存区的值写入Excel
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "设备信息", "电芯条码地址采集值", allDataReadfromCIP_temp.BarCode);
-                                        logNet.WriteInfo("WriteData", "电芯条码地址采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "电芯条码地址采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（冲膜）", "采集值", allDataReadfromCIP_temp.ChongMoValue);
-                                        logNet.WriteInfo("WriteData", "加工工位（冲膜）采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "电芯条码地址采集值写入Excel失败原因: " + e);
-                                        //Console.WriteLine("加工工位（冲膜）采集值写入Excel失败原因: {0} ", e);
-
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "设备信息", "极耳码地址采集值", allDataReadfromCIP_temp.EarCode);
-                                        logNet.WriteInfo("WriteData", "极耳码地址采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        // Console.WriteLine("极耳码地址采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "极耳码地址采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（热压1）", "采集值", allDataReadfromCIP_temp.ReYaValue_1);
-                                        logNet.WriteInfo("加工工位（热压1）采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("加工工位（热压）采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "加工工位（热压1）采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（热压2）", "采集值", allDataReadfromCIP_temp.ReYaValue_2);
-                                        logNet.WriteInfo("加工工位（热压2）采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("加工工位（热压）采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "加工工位（热压2）采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（热压3）", "采集值", allDataReadfromCIP_temp.ReYaValue_3);
-                                        logNet.WriteInfo("加工工位（热压3）采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("加工工位（热压）采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "加工工位（热压3）采集值写入Excel失败原因: " + e);
-                                    }
-
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（热压4）", "采集值", allDataReadfromCIP_temp.ReYaValue_4);
-                                        logNet.WriteInfo("加工工位（热压4）采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("加工工位（热压）采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "加工工位（热压4）采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（顶封）", "采集值", allDataReadfromCIP_temp.DingFengValue);
-                                        logNet.WriteInfo("加工工位（顶封）采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("加工工位（顶封）采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "加工工位（顶封）采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（左角封）", "采集值", allDataReadfromCIP_temp.ZuoJiaoFengValue);
-                                        logNet.WriteInfo("加工工位（左角封）采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("加工工位（左角封）采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "加工工位（左角封）采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（右角封）", "采集值", allDataReadfromCIP_temp.YouJiaoFengValue);
-                                        logNet.WriteInfo("加工工位（右角封）采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("加工工位（右角封）采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "加工工位（右角封）采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "加工工位（侧封）", "采集值", allDataReadfromCIP_temp.CeFengValue);
-                                        logNet.WriteInfo("加工工位（侧封）采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("加工工位（侧封）采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "加工工位（侧封）采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "生产统计", "采集值", allDataReadfromCIP_temp.ProductionDataValue);
-                                        logNet.WriteInfo("生产统计采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("生产统计采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "生产统计采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "寿命管理", "采集值", allDataReadfromCIP_temp.LifeManagementValue);
-                                        logNet.WriteInfo("寿命管理采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("寿命管理采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "寿命管理采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "功能开关", "采集值", allDataReadfromCIP_temp.FunctionEnableValue);
-                                        logNet.WriteInfo("功能开关采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("功能开关采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "功能开关采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "OEE", "采集值", allDataReadfromCIP_temp.OEEInfo1Value);
-                                        logNet.WriteInfo("OEE采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("OEE采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "OEE采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath, "OEE(2)", "采集值", allDataReadfromCIP_temp.OEEInfo2Value);
-                                        logNet.WriteInfo("OEE(2)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        //Console.WriteLine("OEE(2)采集值写入Excel失败原因: {0} ", e);
-                                        logNet.WriteError("WriteData", "OEE(2)采集值写入Excel失败原因: " + e);
-                                    }
-                                    #endregion
-
-                                    //给IEC写入 采集值写入成功的信号
-                                    var tempFlag_finishWriteExcelFile = true;
-
-                                    listWriteItem.Clear();
-                                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["flag_finishWriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, tempFlag_finishWriteExcelFile));
-                                    if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
-                                    {
-                                        //Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: success", DateTime.Now);
-                                        logNet.WriteInfo("[Grpc]", "flag_finishWriteExcelFile 写入IEC成功");
-                                    }
-                                    else
-                                    {
-                                        //Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: fail", DateTime.Now);
-                                        logNet.WriteError("[Grpc]", "flag_finishWriteExcelFile 写入IEC失败");
-                                    }
-
-                                    IecTriggersNumber = 0;  //为了防止IEC连续两次赋值true
-
-                                });
-
-                                IecTriggersNumber++;
-
-                                if (IecTriggersNumber == 1)
-                                {
-                                    thr[3].Start();
-                                }
-
-                            }
 
                             #endregion
 

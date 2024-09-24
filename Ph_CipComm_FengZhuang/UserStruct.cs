@@ -569,6 +569,7 @@ namespace Ph_CipComm_FengZhuang
             public string varAnnotation;  //描述
             public int varIndex;          //地址对应的索引 Station_Data[X]
             public int StationNumber;     //加工工位所属工位号
+            public int varMagnification;  //倍率
         }
 
 

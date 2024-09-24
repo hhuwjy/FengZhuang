@@ -140,6 +140,13 @@ public class ReadExcel
                                 v.StationNumber = Convert.ToInt32(row.GetCell(j).NumericCellValue);
                             }
 
+                            else if (j == getCellIndexByName(headerRow, "倍率"))
+                            {
+                                v.varMagnification = Convert.ToInt32(row.GetCell(j).NumericCellValue);
+                            }
+
+
+
                         }
                     }
                 }

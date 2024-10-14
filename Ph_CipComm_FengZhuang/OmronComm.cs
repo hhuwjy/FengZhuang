@@ -212,7 +212,7 @@ namespace Ph_CipComm_FengZhuang
                 if (ret.IsSuccess)
                 {
                     Array.Copy(ret.Content, 0, DeviceDataStruct.Value_FE, 0, input.Length);
-                    Array.Copy(ret.Content, 0, allDataReadfromCIP.FunctionEnableValue, 0, ret.Content.Length); //写入Excel
+                    //Array.Copy(ret.Content, 0, allDataReadfromCIP.FunctionEnableValue, 0, ret.Content.Length); //写入Excel
                 }
                 else
                 {
@@ -233,7 +233,7 @@ namespace Ph_CipComm_FengZhuang
                         case "Production_statistics[0]":
                             {
 
-                                Array.Copy(ret.Content, 0, allDataReadfromCIP.ProductionDataValue, 0, ret.Content.Length); //写入Excel
+                                //Array.Copy(ret.Content, 0, allDataReadfromCIP.ProductionDataValue, 0, ret.Content.Length); //写入Excel
                                 Array.Copy(ret.Content, 0, DeviceDataStruct.Value_PD, 0, ret.Content.Length); //写入 DeviceDataStruct 结构体
 
                             }
@@ -248,7 +248,7 @@ namespace Ph_CipComm_FengZhuang
                                     tempArray[i] = (uint)ret.Content[i];
                                 }
 
-                                Array.Copy(tempArray, 0, allDataReadfromCIP.LifeManagementValue, 0,  tempArray.Length); //写入Excel
+                                //Array.Copy(tempArray, 0, allDataReadfromCIP.LifeManagementValue, 0,  tempArray.Length); //写入Excel
 
                                 Array.Copy(tempArray, 0, DeviceDataStruct.Value_LM, 0, tempArray.Length); //写入 DeviceDataStruct 结构体
                             }
@@ -266,6 +266,27 @@ namespace Ph_CipComm_FengZhuang
                     //Console.WriteLine(input[0].varName + "read failed");
                 }
             }         
+        }
+
+        //读取电芯型号
+        public void ReadOneSecData(OneSecInfoStruct_CIP[] input, OmronConnectedCipNet cip, ref DeviceDataStruct_IEC DeviceDataStruct)
+        {
+                     
+            OperateResult<string> ret = cip.ReadString(input[0].varName);
+
+            if (ret.IsSuccess)
+            {
+
+                DeviceDataStruct.CellModel = ret.Content;
+                //Console.WriteLine(ret.Content);
+            }
+            else
+            {
+                // Console.WriteLine("整体读取失败：{0}",ret.Message);
+                logNet.WriteError("[CIP]", input[0].varName + "读取失败");
+            }
+
+         
         }
 
         #endregion

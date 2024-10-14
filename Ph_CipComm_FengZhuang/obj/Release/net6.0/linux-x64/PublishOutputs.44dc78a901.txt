@@ -1,0 +1,2 @@
+D:\Phoenix_WJY\Work\12-冠宇数采项目\ReadFromStructArray\FengZhuang_EIP\Ph_CipComm_FengZhuang\bin\Release\net6.0\publish\linux-x64\Ph_CipComm_FengZhuang.pdb
+D:\Phoenix_WJY\Work\12-冠宇数采项目\ReadFromStructArray\FengZhuang_EIP\Ph_CipComm_FengZhuang\bin\Release\net6.0\publish\linux-x64\Ph_CipComm_FengZhuang

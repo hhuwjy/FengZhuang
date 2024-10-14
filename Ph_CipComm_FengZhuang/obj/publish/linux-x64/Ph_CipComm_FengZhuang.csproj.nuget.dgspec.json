@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj": {}
+    "D:\\Phoenix_WJY\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj": {}
   },
   "projects": {
-    "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj": {
+    "D:\\Phoenix_WJY\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj",
+        "projectUniqueName": "D:\\Phoenix_WJY\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj",
         "projectName": "Ph_CipComm_FengZhuang",
-        "projectPath": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj",
+        "projectPath": "D:\\Phoenix_WJY\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\Ph_CipComm_FengZhuang.csproj",
         "packagesPath": "C:\\Users\\eq9ifs\\.nuget\\packages\\",
-        "outputPath": "D:\\2024\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\obj\\publish\\linux-x64\\",
+        "outputPath": "D:\\Phoenix_WJY\\Work\\12-冠宇数采项目\\ReadFromStructArray\\FengZhuang_EIP\\Ph_CipComm_FengZhuang\\obj\\publish\\linux-x64\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\eq9ifs\\AppData\\Roaming\\NuGet\\NuGet.Config",

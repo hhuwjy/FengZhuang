@@ -118,6 +118,7 @@ namespace Ph_CipComm_FengZhuang
         static OneSecInfoStruct_CIP[] Cutterused_statistics;
         static OneSecInfoStruct_CIP[] Y6;
         static OneSecInfoStruct_CIP[] Manual_Andon;
+        static OneSecInfoStruct_CIP[] CellModel;
 
         //报警信号 （1000ms）
         static OneSecInfoStruct_CIP[] Vacuum_Alarm;
@@ -295,6 +296,9 @@ namespace Ph_CipComm_FengZhuang
                             Cutterused_statistics = readExcel.ReadOneSecInfo_Excel(excelWorkbook, "寿命管理");
                             Y6 = readExcel.ReadOneSecInfo_Excel(excelWorkbook, "OEE");
                             Manual_Andon = readExcel.ReadOneSecInfo_Excel(excelWorkbook, "OEE(2)");
+                            CellModel = readExcel.ReadOneSecInfo_Excel(excelWorkbook, "电芯型号");
+
+
 
                             // 报警信号（1000ms)
                             Vacuum_Alarm = readExcel.ReadOneSecInfo_Excel(excelWorkbook, "Vacuum_Alarm");
@@ -554,8 +558,8 @@ namespace Ph_CipComm_FengZhuang
                                     //读取非报警信号 
                                     omronClients.ReadOneSecData(Sys_Manual, cip, ref  allDataReadfromCIP, ref DeviceDataStruct);
                                     omronClients.ReadOneSecData(Production_statistics, cip, ref allDataReadfromCIP, ref DeviceDataStruct);
-                                    omronClients.ReadOneSecData(Cutterused_statistics, cip, ref allDataReadfromCIP, ref DeviceDataStruct);
-
+                                    omronClients.ReadOneSecData(Cutterused_statistics, cip, ref allDataReadfromCIP, ref DeviceDataStruct);                                   
+                                    omronClients.ReadOneSecData(CellModel, cip, ref DeviceDataStruct);
 
                                     bool[] Y6_temp = omronClients.ReadOneSecData(Y6, cip);
                                    

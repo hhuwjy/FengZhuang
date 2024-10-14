@@ -1022,6 +1022,7 @@ namespace Ph_CipComm_FengZhuang
             public bool[] Value_ALM;
             public UInt32[] Value_LM;
             public bool[] Value_OEE;
+            public string CellModel;
 
             public DeviceDataStruct_IEC()
             {
@@ -1030,6 +1031,7 @@ namespace Ph_CipComm_FengZhuang
                 Value_ALM = new bool[2000];
                 Value_LM = new UInt32[36];
                 Value_OEE = new bool[20];
+                CellModel = "";
 
                 for (int i = 0; i < Value_FE.Length; i++)
                 {
@@ -1087,6 +1089,10 @@ namespace Ph_CipComm_FengZhuang
             v4.TypeCode = CoreType.CtArray;
             structV.StructElements.Add(v4);
 
+            ObjectType v5 = new ObjectType();
+            v5.StringValue = StructValue.CellModel;
+            v5.TypeCode = CoreType.CtString;
+            structV.StructElements.Add(v5);
 
             return structV;
         }
